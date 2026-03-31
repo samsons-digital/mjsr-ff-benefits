@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MJSR · Friends & Family Policy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --teal: #1a6b72;
+    --teal-light: #22959f;
+    --gold: #c8963e;
+    --gold-light: #e8b86d;
+    --mist: #e8eef2;
+    --white: #ffffff;
+    --text: #1a2332;
+    --text-mid: #4a5568;
+    --text-light: #8896a8;
+    --success: #2d7a5f;
+    --danger: #8b2020;
+    --danger-bg: #fdf0f0;
+    --danger-border: #e8b4b4;
+    --warn-bg: #fffbf0;
+    --warn-border: #f0d080;
+    --purple: #5b2d8b;
+    --purple-light: #7c4daf;
+    --border: rgba(13,27,42,0.12);
+    --shadow-sm: 0 2px 8px rgba(13,27,42,0.08);
+    --shadow-lg: 0 20px 60px rgba(13,27,42,0.2);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Sora',sans-serif; background:var(--navy); min-height:100vh; color:var(--text); overflow-x:hidden; }
+  .bg-layer { position:fixed; inset:0; z-index:0; background:radial-gradient(ellipse 80% 60% at 20% 10%, rgba(26,107,114,0.22) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 80% 80%, rgba(200,150,62,0.09) 0%, transparent 60%), var(--navy); }
+  .bg-grid { position:fixed; inset:0; z-index:0; background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px); background-size:40px 40px; }
+  .app { position:relative; z-index:1; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:0 16px 60px; }
+
+  /* ── Header ── */
+  header { width:100%; max-width:760px; padding:36px 0 20px; text-align:center; animation:fadeDown 0.7s ease both; }
+  .logo-badge { display:inline-flex; align-items:center; gap:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(200,150,62,0.3); border-radius:100px; padding:6px 18px 6px 8px; margin-bottom:20px; }
+  .logo-dot { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--teal-light),var(--teal)); display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .logo-text { font-family:'DM Mono',monospace; font-size:11px; color:var(--gold-light); letter-spacing:0.08em; text-transform:uppercase; }
+  h1 { font-family:'DM Serif Display',serif; font-size:clamp(24px,4.5vw,38px); color:var(--white); line-height:1.1; margin-bottom:6px; }
+  h1 em { color:var(--gold-light); font-style:italic; }
+  .subtitle { font-size:13px; color:rgba(255,255,255,0.38); font-weight:300; }
+
+  /* ── Mode Tabs ── */
+  .mode-tabs { display:flex; gap:8px; width:100%; max-width:760px; margin-bottom:14px; animation:fadeUp 0.6s ease 0.05s both; flex-wrap:wrap; }
+  .mode-tab { flex:1; min-width:140px; padding:11px 14px; border-radius:12px; border:none; cursor:pointer; font-family:'Sora',sans-serif; font-size:13px; font-weight:600; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:7px; }
+  .mode-tab.submit  { background:rgba(26,107,114,0.2); color:rgba(255,255,255,0.55); border:1px solid rgba(26,107,114,0.25); }
+  .mode-tab.submit.active  { background:var(--teal); color:white; box-shadow:0 4px 16px rgba(26,107,114,0.4); border-color:var(--teal); }
+  .mode-tab.void    { background:rgba(139,32,32,0.18); color:rgba(255,255,255,0.5); border:1px solid rgba(139,32,32,0.22); }
+  .mode-tab.void.active    { background:var(--danger); color:white; box-shadow:0 4px 16px rgba(139,32,32,0.35); border-color:var(--danger); }
+  .mode-tab.manage  { background:rgba(91,45,139,0.18); color:rgba(255,255,255,0.5); border:1px solid rgba(91,45,139,0.22); }
+  .mode-tab.manage.active  { background:var(--purple); color:white; box-shadow:0 4px 16px rgba(91,45,139,0.35); border-color:var(--purple); }
+
+  /* ── Card ── */
+  .card { width:100%; max-width:760px; background:var(--white); border-radius:20px; box-shadow:var(--shadow-lg); overflow:hidden; animation:fadeUp 0.7s ease 0.1s both; }
+  .card-header { padding:22px 32px; display:flex; align-items:center; gap:16px; }
+  .card-header.submit-hdr  { background:linear-gradient(135deg,var(--teal) 0%,var(--navy) 100%); }
+  .card-header.void-hdr    { background:linear-gradient(135deg,#6b1a1a 0%,var(--navy) 100%); }
+  .card-header.manage-hdr  { background:linear-gradient(135deg,var(--purple) 0%,var(--navy) 100%); }
+  .card-header-icon { width:44px; height:44px; border-radius:12px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .card-header-text h2 { font-size:16px; font-weight:600; color:var(--white); }
+  .card-header-text p  { font-size:12px; color:rgba(255,255,255,0.5); margin-top:2px; }
+  .card-body { padding:28px 32px; }
+
+  /* ── Panels ── */
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* ── Steps ── */
+  .steps { display:flex; margin-bottom:28px; border-bottom:1px solid var(--border); padding-bottom:22px; }
+  .step { flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative; }
+  .step::after { content:''; position:absolute; top:16px; left:60%; right:-40%; height:2px; background:var(--mist); z-index:0; }
+  .step:last-child::after { display:none; }
+  .step-num { width:32px; height:32px; border-radius:50%; border:2px solid var(--mist); background:var(--white); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600; color:var(--text-light); z-index:1; transition:all 0.3s; font-family:'DM Mono',monospace; }
+  .step.active .step-num { background:var(--teal); border-color:var(--teal); color:white; }
+  .step.done .step-num   { background:var(--success); border-color:var(--success); color:white; }
+  .step-label { font-size:10px; color:var(--text-light); text-transform:uppercase; letter-spacing:0.06em; text-align:center; }
+  .step.active .step-label { color:var(--teal); font-weight:600; }
+  .form-section { display:none; }
+  .form-section.active { display:block; animation:fadeIn 0.3s ease; }
+
+  /* ── Form elements ── */
+  .section-title { font-size:12px; font-weight:700; color:var(--text-mid); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+  .section-title::before { content:''; display:block; width:3px; height:14px; background:var(--teal); border-radius:2px; flex-shrink:0; }
+  .section-title.danger-accent::before  { background:var(--danger); }
+  .section-title.purple-accent::before  { background:var(--purple); }
+  .field { margin-bottom:18px; }
+  label { display:block; font-size:12px; font-weight:600; color:var(--text-mid); margin-bottom:6px; letter-spacing:0.03em; }
+  label .req { color:var(--gold); margin-left:2px; }
+  input, select, textarea { width:100%; padding:10px 14px; border:1.5px solid var(--border); border-radius:10px; font-family:'Sora',sans-serif; font-size:14px; color:var(--text); background:var(--white); transition:border-color 0.2s,box-shadow 0.2s; outline:none; -webkit-appearance:none; }
+  input:focus, select:focus, textarea:focus { border-color:var(--teal); box-shadow:0 0 0 3px rgba(26,107,114,0.1); }
+  select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a5568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; cursor:pointer; }
+  textarea { resize:vertical; min-height:72px; }
+  .field-hint { font-size:11px; color:var(--text-light); margin-top:5px; }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .field-row-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  @media(max-width:560px){ .field-row,.field-row-3 { grid-template-columns:1fr; } }
+
+  /* ── Banners ── */
+  .limit-banner { display:none; border-radius:12px; padding:13px 16px; margin-bottom:16px; font-size:13px; line-height:1.5; }
+  .limit-banner.over { display:flex; gap:10px; background:var(--danger-bg); border:1px solid var(--danger-border); color:var(--danger); }
+  .limit-banner.warn { display:flex; gap:10px; background:var(--warn-bg); border:1px solid var(--warn-border); color:#7a5c00; }
+  .limit-banner.info { display:flex; gap:10px; background:#f0f7ff; border:1px solid #b8d4f0; color:#1a4a7a; }
+  .limit-banner .lb-icon { font-size:18px; flex-shrink:0; }
+  .limit-banner strong { display:block; margin-bottom:2px; }
+
+  /* ── Balance bar ── */
+  .balance-bar { margin-top:10px; }
+  .balance-bar-track { height:6px; background:#e0e0e0; border-radius:3px; overflow:hidden; margin-bottom:4px; }
+  .balance-bar-fill { height:100%; border-radius:3px; transition:width 0.4s ease, background 0.3s; }
+  .balance-bar-labels { display:flex; justify-content:space-between; font-size:10px; color:var(--text-light); font-family:'DM Mono',monospace; }
+
+  /* ── Benefit cards ── */
+  .benefit-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:22px; }
+  @media(max-width:500px){ .benefit-cards { grid-template-columns:1fr; } }
+  .benefit-card { border:2px solid var(--border); border-radius:14px; padding:15px 12px; cursor:pointer; transition:all 0.2s; text-align:center; position:relative; user-select:none; }
+  .benefit-card:hover { border-color:var(--teal-light); transform:translateY(-1px); }
+  .benefit-card.selected { border-color:var(--teal); background:rgba(26,107,114,0.05); box-shadow:0 0 0 3px rgba(26,107,114,0.1); }
+  .benefit-card.disabled { opacity:0.4; cursor:not-allowed; pointer-events:none; }
+  .benefit-card .icon { font-size:24px; margin-bottom:7px; }
+  .benefit-card .name { font-size:12px; font-weight:600; color:var(--text); }
+  .benefit-card .desc { font-size:10px; color:var(--text-light); margin-top:2px; }
+  .benefit-card .zero-tag { font-size:9px; color:var(--danger); font-weight:600; margin-top:3px; }
+  .benefit-card .check { position:absolute; top:8px; right:8px; width:18px; height:18px; border-radius:50%; background:var(--teal); display:none; align-items:center; justify-content:center; font-size:10px; color:white; }
+  .benefit-card.selected .check { display:flex; }
+
+  /* ── Qty ── */
+  .qty-field { display:none; background:var(--mist); border-radius:12px; padding:15px; margin-bottom:14px; }
+  .qty-field.visible { display:block; animation:fadeIn 0.2s ease; }
+  .qty-field label { color:var(--text); margin-bottom:8px; }
+  .qty-control { display:flex; align-items:center; gap:12px; }
+  .qty-btn { width:36px; height:36px; border-radius:8px; border:none; cursor:pointer; background:var(--white); box-shadow:var(--shadow-sm); font-size:18px; color:var(--teal); display:flex; align-items:center; justify-content:center; transition:all 0.15s; flex-shrink:0; }
+  .qty-btn:hover { background:var(--teal); color:white; }
+  .qty-input { width:80px!important; text-align:center; font-weight:600; font-size:18px; padding:6px!important; border:1.5px solid var(--border); border-radius:8px; }
+  .qty-unit { font-size:12px; color:var(--text-mid); }
+
+  /* ── Approval box ── */
+  .approval-box { background:linear-gradient(135deg,rgba(200,150,62,0.06),rgba(200,150,62,0.02)); border:1.5px solid rgba(200,150,62,0.25); border-radius:14px; padding:18px; margin-bottom:18px; }
+  .approval-box-title { font-size:12px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .approval-box-title::before { content:'✦'; font-size:10px; }
+
+  /* ── Summary cards ── */
+  .summary-card { background:linear-gradient(135deg,rgba(13,27,42,0.03),rgba(26,107,114,0.05)); border:1px solid rgba(26,107,114,0.18); border-radius:14px; padding:18px; margin-bottom:20px; }
+  .summary-row { display:flex; justify-content:space-between; align-items:flex-start; padding:7px 0; border-bottom:1px dashed var(--border); font-size:13px; gap:12px; }
+  .summary-row:last-child { border-bottom:none; }
+  .summary-row .lbl { color:var(--text-mid); white-space:nowrap; }
+  .summary-row .val { font-weight:600; color:var(--text); font-family:'DM Mono',monospace; font-size:12px; text-align:right; }
+  .summary-row .val.hi       { color:var(--teal); }
+  .summary-row .val.approved { color:var(--success); }
+  .summary-row .val.danger   { color:var(--danger); }
+
+  /* ── Void ── */
+  .void-found-card { background:rgba(139,32,32,0.04); border:1.5px solid rgba(139,32,32,0.2); border-radius:14px; padding:18px; margin-bottom:18px; animation:fadeIn 0.3s ease; }
+  .void-found-title { font-size:12px; font-weight:700; color:var(--danger); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:12px; }
+  .void-confirm-box { background:rgba(139,32,32,0.05); border:1.5px dashed rgba(139,32,32,0.28); border-radius:12px; padding:14px; margin-bottom:18px; font-size:13px; color:var(--danger); line-height:1.6; }
+  .void-confirm-box strong { display:block; font-size:13px; margin-bottom:4px; }
+  .ref-input-wrap { display:flex; gap:10px; align-items:flex-start; }
+  .ref-input-wrap input { font-family:'DM Mono',monospace; letter-spacing:0.05em; text-transform:uppercase; }
+  .ref-input-wrap input::placeholder { text-transform:none; letter-spacing:0; }
+
+  /* ── Employee Management ── */
+  .emp-manage-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media(max-width:620px){ .emp-manage-grid { grid-template-columns:1fr; } }
+
+  .emp-add-box { background:linear-gradient(135deg,rgba(91,45,139,0.05),rgba(91,45,139,0.02)); border:1.5px solid rgba(91,45,139,0.2); border-radius:16px; padding:22px; }
+  .emp-remove-box { background:linear-gradient(135deg,rgba(139,32,32,0.04),rgba(139,32,32,0.01)); border:1.5px solid rgba(139,32,32,0.18); border-radius:16px; padding:22px; }
+  .emp-box-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+  .emp-box-title.add { color:var(--purple); }
+  .emp-box-title.remove { color:var(--danger); }
+
+  .tier-selector { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:4px; }
+  .tier-btn { padding:8px 6px; border-radius:9px; border:1.5px solid var(--border); background:var(--white); cursor:pointer; font-family:'Sora',sans-serif; font-size:11px; font-weight:600; color:var(--text-mid); text-align:center; transition:all 0.2s; }
+  .tier-btn:hover { border-color:var(--purple-light); color:var(--purple); }
+  .tier-btn.active { background:var(--purple); border-color:var(--purple); color:white; }
+  .tier-label { font-size:10px; color:var(--text-light); margin-top:4px; text-align:center; }
+
+  /* Employee list */
+  .emp-list { margin-top:20px; border-top:1px solid var(--border); padding-top:20px; }
+  .emp-list-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .emp-list-title { font-size:12px; font-weight:700; color:var(--text-mid); text-transform:uppercase; letter-spacing:0.07em; }
+  .emp-search { padding:8px 12px; border:1.5px solid var(--border); border-radius:9px; font-family:'Sora',sans-serif; font-size:13px; width:220px; outline:none; }
+  .emp-search:focus { border-color:var(--purple); box-shadow:0 0 0 3px rgba(91,45,139,0.1); }
+  .emp-table-wrap { max-height:340px; overflow-y:auto; border-radius:12px; border:1px solid var(--border); }
+  .emp-table { width:100%; border-collapse:collapse; font-size:13px; }
+  .emp-table th { background:var(--navy); color:rgba(255,255,255,0.8); font-size:10px; text-transform:uppercase; letter-spacing:0.06em; padding:10px 12px; text-align:left; position:sticky; top:0; }
+  .emp-table td { padding:10px 12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  .emp-table tr:last-child td { border-bottom:none; }
+  .emp-table tr:hover td { background:#f9f9fb; }
+  .emp-table .status-badge { font-size:10px; font-weight:700; padding:3px 8px; border-radius:100px; }
+  .emp-table .status-active   { background:#d4edda; color:#155724; }
+  .emp-table .status-inactive { background:#f8d7da; color:#721c24; }
+  .emp-table .tier-badge { font-size:10px; font-weight:600; padding:3px 8px; border-radius:100px; background:rgba(91,45,139,0.1); color:var(--purple); font-family:'DM Mono',monospace; }
+  .remove-emp-btn { padding:5px 10px; border-radius:7px; border:1.5px solid rgba(139,32,32,0.25); background:transparent; color:var(--danger); font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s; font-family:'Sora',sans-serif; }
+  .remove-emp-btn:hover { background:var(--danger); color:white; border-color:var(--danger); }
+  .restore-emp-btn { padding:5px 10px; border-radius:7px; border:1.5px solid rgba(26,107,114,0.25); background:transparent; color:var(--teal); font-size:11px; font-weight:600; cursor:pointer; transition:all 0.15s; font-family:'Sora',sans-serif; }
+  .restore-emp-btn:hover { background:var(--teal); color:white; border-color:var(--teal); }
+  .filter-tabs { display:flex; gap:6px; margin-bottom:12px; }
+  .filter-tab { padding:5px 12px; border-radius:100px; border:1.5px solid var(--border); background:white; font-size:11px; font-weight:600; color:var(--text-mid); cursor:pointer; transition:all 0.15s; font-family:'Sora',sans-serif; }
+  .filter-tab.active { background:var(--navy); color:white; border-color:var(--navy); }
+
+  /* ── Buttons ── */
+  .btn-row { display:flex; gap:12px; justify-content:flex-end; margin-top:8px; }
+  .btn { padding:11px 22px; border-radius:10px; font-family:'Sora',sans-serif; font-size:14px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; display:flex; align-items:center; gap:8px; white-space:nowrap; }
+  .btn-ghost  { background:var(--mist); color:var(--text-mid); }
+  .btn-ghost:hover { background:#dde4ec; color:var(--text); }
+  .btn-primary { background:linear-gradient(135deg,var(--teal-light),var(--teal)); color:white; box-shadow:0 4px 14px rgba(26,107,114,0.28); }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(26,107,114,0.38); }
+  .btn-submit { background:linear-gradient(135deg,var(--gold-light),var(--gold)); color:var(--navy); box-shadow:0 4px 14px rgba(200,150,62,0.28); }
+  .btn-submit:hover { transform:translateY(-1px); }
+  .btn-danger { background:linear-gradient(135deg,#c0392b,#8b2020); color:white; box-shadow:0 4px 14px rgba(139,32,32,0.28); }
+  .btn-danger:hover { transform:translateY(-1px); }
+  .btn-purple { background:linear-gradient(135deg,var(--purple-light),var(--purple)); color:white; box-shadow:0 4px 14px rgba(91,45,139,0.28); }
+  .btn-purple:hover { transform:translateY(-1px); }
+  .btn-lookup { background:var(--navy); color:white; padding:10px 18px; font-size:13px; }
+  .btn-lookup:hover { background:#1a2d42; }
+  .btn:disabled { opacity:0.45; cursor:not-allowed; transform:none!important; box-shadow:none!important; }
+
+  /* ── Success ── */
+  .success-panel { display:none; text-align:center; padding:40px 28px; }
+  .success-panel.visible { display:block; animation:fadeIn 0.5s ease; }
+  .success-icon { width:68px; height:68px; border-radius:50%; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; font-size:34px; }
+  .success-icon.green  { background:linear-gradient(135deg,var(--teal-light),var(--teal)); box-shadow:0 8px 28px rgba(26,107,114,0.28); }
+  .success-icon.red    { background:linear-gradient(135deg,#c0392b,#8b2020); box-shadow:0 8px 28px rgba(139,32,32,0.28); }
+  .success-icon.purple { background:linear-gradient(135deg,var(--purple-light),var(--purple)); box-shadow:0 8px 28px rgba(91,45,139,0.28); }
+  .success-panel h3 { font-family:'DM Serif Display',serif; font-size:24px; color:var(--text); margin-bottom:8px; }
+  .success-panel p { font-size:14px; color:var(--text-mid); margin-bottom:22px; line-height:1.6; }
+  .ref-code { display:inline-block; background:var(--mist); border-radius:8px; padding:9px 18px; font-family:'DM Mono',monospace; font-size:15px; font-weight:500; letter-spacing:0.1em; margin-bottom:24px; }
+  .ref-code.teal-ref   { color:var(--teal); }
+  .ref-code.void-ref   { color:var(--danger); }
+  .ref-code.purple-ref { color:var(--purple); }
+
+  /* ── Info strip ── */
+  .info-strip { width:100%; max-width:760px; margin-top:14px; display:flex; gap:10px; animation:fadeUp 0.7s ease 0.2s both; flex-wrap:wrap; }
+  .info-chip { flex:1; min-width:120px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:11px 13px; display:flex; align-items:center; gap:8px; }
+  .info-chip .ic { font-size:17px; }
+  .info-chip .it { font-size:11px; color:rgba(255,255,255,0.38); line-height:1.4; }
+  .info-chip .it strong { color:rgba(255,255,255,0.68); display:block; font-size:11px; }
+
+  .spinner { display:inline-block; width:15px; height:15px; border:2px solid rgba(255,255,255,0.35); border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--navy); color:white; border-radius:100px; padding:11px 22px; font-size:13px; box-shadow:var(--shadow-lg); z-index:1000; opacity:0; transition:opacity 0.3s; border:1px solid rgba(200,150,62,0.3); white-space:nowrap; }
+  .toast.show { opacity:1; }
+
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(14px)}  to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn   { from{opacity:0} to{opacity:1} }
+  @keyframes spin     { to{transform:rotate(360deg)} }
+</style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div class="bg-grid"></div>
+<div class="app">
+
+  <header>
+    <div class="logo-badge">
+      <div class="logo-dot">🏔</div>
+      <span class="logo-text">MJSR · Samsons Group</span>
+    </div>
+    <h1>Friends &amp; <em>Family</em> Benefit Portal</h1>
+    <p class="subtitle">May 2025 – April 2026 · Administration &amp; Compliance System</p>
+  </header>
+
+  <!-- MODE TABS -->
+  <div class="mode-tabs">
+    <button class="mode-tab submit active" onclick="switchMode('submit')">📋 New Submission</button>
+    <button class="mode-tab void"          onclick="switchMode('void')">↩ Void Entry</button>
+    <button class="mode-tab manage"        onclick="switchMode('manage')">👤 Manage Employees</button>
+  </div>
+
+  <div class="card" id="main-card">
+
+    <!-- ══════════════════════════════════════════
+         PANEL 1 — SUBMISSION
+    ══════════════════════════════════════════ -->
+    <div id="submit-panel" class="panel active">
+      <div class="card-header submit-hdr">
+        <div class="card-header-icon">📋</div>
+        <div class="card-header-text">
+          <h2>New Benefit Usage Entry</h2>
+          <p>Line manager approval required for all submissions</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="steps">
+          <div class="step active" id="step-1"><div class="step-num">1</div><div class="step-label">Employee</div></div>
+          <div class="step" id="step-2"><div class="step-num">2</div><div class="step-label">Benefit</div></div>
+          <div class="step" id="step-3"><div class="step-num">3</div><div class="step-label">Details</div></div>
+          <div class="step" id="step-4"><div class="step-num">4</div><div class="step-label">Review</div></div>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="form-section active" id="sec-1">
+          <div class="section-title">Employee Information</div>
+          <div class="field">
+            <label for="emp-select">Employee Name <span class="req">*</span></label>
+            <select id="emp-select"><option value="">— Select employee —</option></select>
+          </div>
+          <div class="field" id="emp-info-block" style="display:none;">
+            <div class="summary-card">
+              <div class="summary-row" style="border-bottom:1px solid var(--border);margin-bottom:4px;padding-bottom:8px;">
+                <span class="lbl" style="font-size:11px;text-transform:uppercase;letter-spacing:0.06em;">Live balances from Google Sheet</span>
+                <span style="font-size:10px;background:#d4edda;color:#155724;padding:2px 8px;border-radius:100px;font-weight:700;font-family:'DM Mono',monospace;">● LIVE</span>
+              </div>
+              <div class="summary-row"><span class="lbl">Department</span><span class="val" id="disp-dept">—</span></div>
+              <div class="summary-row"><span class="lbl">Designation</span><span class="val" id="disp-desig">—</span></div>
+              <div class="summary-row"><span class="lbl">Tickets: Limit / Used / Left</span><span class="val hi" id="disp-tickets">—</span></div>
+              <div class="summary-row"><span class="lbl">Food: Budget / Used / Left</span><span class="val hi" id="disp-food">—</span></div>
+              <div class="summary-row"><span class="lbl">Nights: Limit / Used / Left</span><span class="val hi" id="disp-nights">—</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="submitter">Submitted By <span class="req">*</span></label>
+            <input type="text" id="submitter" placeholder="Name of person submitting this form">
+            <div class="field-hint">Can be the employee or their supervisor</div>
+          </div>
+          <div class="btn-row"><button class="btn btn-primary" onclick="goStep(2)">Continue →</button></div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="form-section" id="sec-2">
+          <div class="section-title">Select Benefit Type</div>
+          <div class="benefit-cards">
+            <div class="benefit-card" onclick="selectBenefit('tickets')" id="bc-tickets">
+              <div class="check">✓</div><div class="icon">🎫</div><div class="name">Chairlift Ride Tickets</div><div class="desc">Chairlift rides</div><div class="zero-tag" id="zt-tickets"></div>
+            </div>
+            <div class="benefit-card" onclick="selectBenefit('food')" id="bc-food">
+              <div class="check">✓</div><div class="icon">🍽</div><div class="name">Free Food</div><div class="desc">Restaurant / F&B</div><div class="zero-tag" id="zt-food"></div>
+            </div>
+            <div class="benefit-card" onclick="selectBenefit('nights')" id="bc-nights">
+              <div class="check">✓</div><div class="icon">🛏</div><div class="name">Inn Nights</div><div class="desc">Samsons Inn stay</div><div class="zero-tag" id="zt-nights"></div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+            <button class="btn btn-primary" onclick="goStep(3)">Continue →</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="form-section" id="sec-3">
+          <div class="section-title">Usage Details</div>
+          <div class="field"><label for="usage-date">Date of Usage <span class="req">*</span></label><input type="date" id="usage-date"></div>
+          <div class="qty-field" id="qf-tickets">
+            <label>Number of Tickets <span class="req">*</span></label>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="adjustQty('tickets',-1)">−</button>
+              <input class="qty-input" type="number" id="qty-tickets" value="1" min="1" max="50" oninput="checkLimitLive()">
+              <button class="qty-btn" onclick="adjustQty('tickets',1)">+</button>
+              <span class="qty-unit">ticket(s)</span>
+            </div>
+            <div class="balance-bar" id="bar-tickets" style="margin-top:10px;"></div>
+          </div>
+          <div class="qty-field" id="qf-food">
+            <label>Amount (PKR) <span class="req">*</span></label>
+            <div class="qty-control">
+              <span class="qty-unit" style="font-weight:600;margin-right:4px;">PKR</span>
+              <input type="number" id="qty-food" placeholder="0" min="1" style="max-width:170px;" oninput="checkLimitLive()">
+            </div>
+            <div class="balance-bar" id="bar-food" style="margin-top:10px;"></div>
+          </div>
+          <div class="qty-field" id="qf-nights">
+            <label>Number of Nights <span class="req">*</span></label>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="adjustQty('nights',-1)">−</button>
+              <input class="qty-input" type="number" id="qty-nights" value="1" min="1" max="30" oninput="checkLimitLive()">
+              <button class="qty-btn" onclick="adjustQty('nights',1)">+</button>
+              <span class="qty-unit">night(s)</span>
+            </div>
+            <div class="balance-bar" id="bar-nights" style="margin-top:10px;"></div>
+          </div>
+          <div class="limit-banner" id="limit-banner"><div class="lb-icon" id="limit-icon">⛔</div><div id="limit-msg"></div></div>
+          <div class="field"><label for="guests">Guest / Beneficiary Names</label><input type="text" id="guests" placeholder="e.g. Wife + 2 children, or 'Self'"><div class="field-hint">Who benefited from this usage</div></div>
+          <div class="field"><label for="remarks">Remarks / Notes</label><textarea id="remarks" placeholder="Any notes for admin or audit..."></textarea></div>
+          <div class="approval-box">
+            <div class="approval-box-title">Line Manager Approval</div>
+            <div class="field" style="margin-bottom:13px;"><label for="approved-by">Approved By <span class="req">*</span></label><input type="text" id="approved-by" placeholder="Full name of approving line manager"><div class="field-hint">The line manager who authorised this usage</div></div>
+            <div class="field" style="margin-bottom:0;"><label for="approval-date">Approval Date <span class="req">*</span></label><input type="date" id="approval-date"></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost" onclick="goStep(2)">← Back</button>
+            <button class="btn btn-primary" id="to-review-btn" onclick="goStep(4)">Review →</button>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="form-section" id="sec-4">
+          <div class="section-title">Review &amp; Confirm</div>
+          <div class="summary-card" id="review-summary"></div>
+          <div class="btn-row" style="margin-top:18px;">
+            <button class="btn btn-ghost" onclick="goStep(3)">← Edit</button>
+            <button class="btn btn-submit" id="submit-btn" onclick="submitEntry()"><span id="submit-label">✓ Submit Entry</span></button>
+          </div>
+        </div>
+
+        <div class="success-panel" id="submit-success">
+          <div class="success-icon green">✓</div>
+          <h3>Entry Logged!</h3>
+          <p id="submit-success-msg">Benefit usage recorded and sent to master database.</p>
+          <div class="ref-code teal-ref" id="submit-ref-code">—</div>
+          <button class="btn btn-primary" onclick="location.reload()" style="margin:0 auto;">+ New Submission</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PANEL 2 — VOID
+    ══════════════════════════════════════════ -->
+    <div id="void-panel" class="panel">
+      <div class="card-header void-hdr">
+        <div class="card-header-icon">↩</div>
+        <div class="card-header-text">
+          <h2>Void / Reverse a Submission</h2>
+          <p>Logs a reversal entry — original record preserved for audit</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="form-section active" id="vsec-1">
+          <div class="section-title danger-accent">Find Submission to Void</div>
+          <div class="field">
+            <label for="void-ref">Reference Code <span class="req">*</span></label>
+            <div class="ref-input-wrap">
+              <input type="text" id="void-ref" placeholder="e.g. FF-ABC123XY" maxlength="20">
+              <button class="btn btn-lookup" onclick="lookupRef()">Look Up</button>
+            </div>
+            <div class="field-hint">Found on the confirmation screen or in FF_Master_Log sheet</div>
+          </div>
+          <div id="void-not-found" style="display:none;" class="limit-banner over">
+            <div class="lb-icon">⛔</div>
+            <div><strong>Reference code not found</strong>No active submission matches that code in the master log. Check the spelling and try again. Note: already-voided entries cannot be voided twice.</div>
+          </div>
+          <div id="void-found-block" style="display:none;">
+            <div class="void-found-card">
+              <div class="void-found-title">📄 Submission Found</div>
+              <div id="void-found-summary"></div>
+            </div>
+            <div class="void-confirm-box">
+              <strong>⚠️ What will happen</strong>
+              A VOID reversal row will be added to FF_Master_Log. The original entry is preserved for audit. The employee's balance will be restored by the voided amount.
+            </div>
+            <div class="section-title danger-accent">Void Authorisation</div>
+            <div class="field">
+              <label for="void-reason">Reason for Voiding <span class="req">*</span></label>
+              <select id="void-reason">
+                <option value="">— Select reason —</option>
+                <option>Data entry error</option>
+                <option>Wrong employee selected</option>
+                <option>Wrong benefit type</option>
+                <option>Wrong amount entered</option>
+                <option>Duplicate submission</option>
+                <option>Approval withdrawn</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field" id="void-other-field" style="display:none;"><label for="void-other">Please specify <span class="req">*</span></label><input type="text" id="void-other" placeholder="Describe the reason"></div>
+            <div class="field"><label for="void-by">Voided By <span class="req">*</span></label><input type="text" id="void-by" placeholder="Full name of person authorising this reversal"></div>
+            <div class="field"><label for="void-remarks">Additional Notes</label><textarea id="void-remarks" placeholder="Further details for audit trail..."></textarea></div>
+            <div class="btn-row">
+              <button class="btn btn-ghost" onclick="resetVoid()">← Start Over</button>
+              <button class="btn btn-danger" id="void-submit-btn" onclick="submitVoid()"><span id="void-submit-label">↩ Confirm Void</span></button>
+            </div>
+          </div>
+        </div>
+        <div class="success-panel" id="void-success">
+          <div class="success-icon red">↩</div>
+          <h3>Entry Voided</h3>
+          <p id="void-success-msg">Reversal logged and balance restored.</p>
+          <div class="ref-code void-ref" id="void-ref-code">—</div>
+          <button class="btn btn-ghost" onclick="location.reload()" style="margin:0 auto;">← Back to Portal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+         PANEL 3 — EMPLOYEE MANAGEMENT
+    ══════════════════════════════════════════ -->
+    <div id="manage-panel" class="panel">
+      <div class="card-header manage-hdr">
+        <div class="card-header-icon">👤</div>
+        <div class="card-header-text">
+          <h2>Employee Management</h2>
+          <p>Add or remove employees from the F&amp;F Policy register</p>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div class="emp-manage-grid">
+
+          <!-- ADD EMPLOYEE -->
+          <div class="emp-add-box">
+            <div class="emp-box-title add">➕ Add New Employee</div>
+
+            <div class="field">
+              <label for="new-name">Full Name <span class="req">*</span></label>
+              <input type="text" id="new-name" placeholder="Employee full name">
+            </div>
+            <div class="field">
+              <label for="new-dept">Department <span class="req">*</span></label>
+              <select id="new-dept">
+                <option value="">— Select department —</option>
+                <option>Resort Senior Management</option>
+                <option>Islamabad Office Team</option>
+                <option>Accounts & Finance</option>
+                <option>Internal Audit</option>
+                <option>Administration, Sec & Proc</option>
+                <option>Legal & Personal Relations</option>
+                <option>Technical</option>
+                <option>Electrical & Engineering</option>
+                <option>Civil & Construction</option>
+                <option>Chairlift & Machinery</option>
+                <option>Restaurant (F&B)</option>
+                <option>Food Stores & Treasury</option>
+                <option>Sales & Services</option>
+                <option>Resort Security</option>
+                <option>Green Valley / Security</option>
+                <option>Samsons-Inn</option>
+                <option>Malam House</option>
+                <option>PC 20 Rooms</option>
+                <option>Pharmacy</option>
+                <option>Daily Wage - Admin</option>
+                <option>Daily Wages - Restaurant</option>
+                <option>Daily Wage - Samsons Inn</option>
+                <option>Daily Wage - Green Valley</option>
+                <option>Daily Wage - Water Source</option>
+                <option>Daily Wage - Zipline</option>
+                <option>Daily Wage - Giant Swing</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="new-desig">Designation <span class="req">*</span></label>
+              <input type="text" id="new-desig" placeholder="Job title / designation">
+            </div>
+
+            <div class="field">
+              <label>Benefit Tier <span class="req">*</span></label>
+              <div class="tier-selector">
+                <button class="tier-btn" id="tier-a" onclick="selectTier('A')">Tier A</button>
+                <button class="tier-btn" id="tier-b" onclick="selectTier('B')">Tier B</button>
+                <button class="tier-btn" id="tier-c" onclick="selectTier('C')">Tier C</button>
+              </div>
+              <div class="tier-label" id="tier-desc">20 tickets · PKR 30,000 food · 5 nights</div>
+            </div>
+
+            <div class="field-row-3" id="custom-limits" style="display:none;">
+              <div class="field" style="margin-bottom:0;"><label>Tickets</label><input type="number" id="new-t" value="7" min="0"></div>
+              <div class="field" style="margin-bottom:0;"><label>Food (PKR)</label><input type="number" id="new-f" value="0" min="0"></div>
+              <div class="field" style="margin-bottom:0;"><label>Nights</label><input type="number" id="new-n" value="0" min="0"></div>
+            </div>
+
+            <div class="field">
+              <label for="new-addedby">Added By <span class="req">*</span></label>
+              <input type="text" id="new-addedby" placeholder="Admin / HR name authorising this">
+            </div>
+
+            <button class="btn btn-purple" style="width:100%;justify-content:center;margin-top:4px;" onclick="addEmployee()">
+              <span id="add-emp-label">➕ Add to Register</span>
+            </button>
+          </div>
+
+          <!-- REMOVE PANEL INFO -->
+          <div class="emp-remove-box">
+            <div class="emp-box-title remove">🗑 Remove Employee</div>
+            <p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:14px;">Find the employee in the roster below and click <strong>Remove</strong> to deactivate them from the policy. They will be marked <span style="color:var(--danger);font-weight:700;">INACTIVE</span> and hidden from the submission form.</p>
+            <p style="font-size:13px;color:var(--text-mid);line-height:1.7;margin-bottom:14px;">Their usage history is preserved for audit. You can restore them at any time.</p>
+            <div class="limit-banner info" style="display:flex;">
+              <div class="lb-icon">ℹ️</div>
+              <div><strong>Deactivation only</strong>Employees are never permanently deleted — all records are kept for compliance and year-end reconciliation.</div>
+            </div>
+            <div class="field" style="margin-top:16px;">
+              <label for="remove-reason">Removal Reason</label>
+              <select id="remove-reason">
+                <option value="">— Optional —</option>
+                <option>Resigned</option>
+                <option>Terminated</option>
+                <option>Contract ended</option>
+                <option>Policy ineligibility</option>
+                <option>Transfer</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="remove-by">Removed By</label>
+              <input type="text" id="remove-by" placeholder="Admin / HR name">
+            </div>
+          </div>
+        </div>
+
+        <!-- EMPLOYEE ROSTER -->
+        <div class="emp-list">
+          <div class="emp-list-header">
+            <div class="emp-list-title">Employee Roster <span id="roster-count" style="font-family:'DM Mono',monospace;color:var(--text-light);font-size:11px;"></span></div>
+            <input type="text" class="emp-search" id="emp-search" placeholder="🔍  Search name or department..." oninput="renderRoster()">
+          </div>
+          <div class="filter-tabs">
+            <button class="filter-tab active" onclick="setFilter('all',this)">All</button>
+            <button class="filter-tab" onclick="setFilter('active',this)">Active</button>
+            <button class="filter-tab" onclick="setFilter('inactive',this)">Inactive</button>
+          </div>
+          <div class="emp-table-wrap">
+            <table class="emp-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Department</th>
+                  <th>Tier</th>
+                  <th>Status</th>
+                  <th style="text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody id="roster-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Manage success flash -->
+        <div class="success-panel" id="manage-success" style="padding:30px 20px;">
+          <div class="success-icon purple">✓</div>
+          <h3 id="manage-success-title">Done!</h3>
+          <p id="manage-success-msg"></p>
+          <button class="btn btn-purple" onclick="closeManageSuccess()" style="margin:0 auto;">← Back to Roster</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /card -->
+
+  <div class="info-strip">
+    <div class="info-chip"><div class="ic">📅</div><div class="it"><strong>Policy Year</strong>May 2025 – April 2026</div></div>
+    <div class="info-chip"><div class="ic">✅</div><div class="it"><strong>Approval Required</strong>Line manager sign-off</div></div>
+    <div class="info-chip"><div class="ic">👤</div><div class="it"><strong>Roster</strong><span id="strip-count">132 employees</span></div></div>
+    <div class="info-chip"><div class="ic">🔒</div><div class="it"><strong>Audit Trail</strong>Voids never deleted</div></div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw4CwBqf-z2vpFhlgN4m5Mc824FnDlz5BxoYcj2deOeUbWJIiXBv4GLZaqHLMYuhgo-/exec';
+const sessionLog = {};
+
+// ── Tier definitions ──────────────────────────────────────────────
+const TIERS = {
+  A: { label:'Tier A', desc:'20 tickets · PKR 30,000 food · 5 nights', tLimit:20, fLimit:30000, nLimit:5 },
+  B: { label:'Tier B', desc:'15 tickets · PKR 20,000 food · 0 nights', tLimit:15, fLimit:20000, nLimit:0 },
+  C: { label:'Tier C', desc:'7 tickets · No food · No nights',          tLimit:7,  fLimit:0,     nLimit:0 },
+};
+let selectedTier = null;
+
+// ── Employee roster ───────────────────────────────────────────────
+let roster = [
+  {name:"Zia Ur Rehman",dept:"Resort Senior Management",desig:"Director",tLimit:20,tUsed:0,fLimit:30000,fUsed:0,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Martin Schultz",dept:"Resort Senior Management",desig:"General Manager Ski Resort",tLimit:20,tUsed:8,fLimit:30000,fUsed:13540,nLimit:5,nUsed:5,active:true,tier:'A'},
+  {name:"Muhammad Hammad",dept:"Islamabad Office Team",desig:"Head of Finance",tLimit:20,tUsed:4,fLimit:30000,fUsed:0,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Ali Pervaiz",dept:"Islamabad Office Team",desig:"Marketing Executive Operations",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Muhammad Ibrahim",dept:"Islamabad Office Team",desig:"Marketing Officer",tLimit:7,tUsed:4,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Zaid Khan",dept:"Islamabad Office Team",desig:"Sr. Manager HR",tLimit:20,tUsed:20,fLimit:30000,fUsed:0,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Mehmoona Khaliq",dept:"Islamabad Office Team",desig:"HR Executive",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Asfand Ali",dept:"Islamabad Office Team",desig:"GM Legal",tLimit:20,tUsed:8,fLimit:30000,fUsed:0,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Sadaqat Ahmed",dept:"Islamabad Office Team",desig:"Sr. Executive Assistant",tLimit:20,tUsed:12,fLimit:30000,fUsed:12480,nLimit:5,nUsed:5,active:true,tier:'A'},
+  {name:"Saad Asim",dept:"Islamabad Office Team",desig:"Legal Manager",tLimit:20,tUsed:0,fLimit:30000,fUsed:0,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Raheem Khan",dept:"Pharmacy",desig:"Asst. Dispenser",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Pir Waris Shah",dept:"Legal & Personal Relations",desig:"Manager Legal And PR",tLimit:20,tUsed:20,fLimit:30000,fUsed:14141,nLimit:5,nUsed:3,active:true,tier:'A'},
+  {name:"Ashfaq",dept:"Administration, Sec & Proc",desig:"Quality Control Executive",tLimit:15,tUsed:15,fLimit:20000,fUsed:8095,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Abid Nawaz",dept:"Administration, Sec & Proc",desig:"Asst. Admin",tLimit:15,tUsed:5,fLimit:20000,fUsed:4975,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Farakh Shad",dept:"Administration, Sec & Proc",desig:"Care Taker - Guest House",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Adnan Khan",dept:"Administration, Sec & Proc",desig:"Purchaser",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Abdur Raheem",dept:"Administration, Sec & Proc",desig:"Purchaser",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Fazal Wahab",dept:"Administration, Sec & Proc",desig:"Driver",tLimit:7,tUsed:5,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Muhammad Ghafoor",dept:"Administration, Sec & Proc",desig:"Imam Masjid",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Muhammad Inam",dept:"Administration, Sec & Proc",desig:"Malam Masjid Imam",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Muhammad Tariq",dept:"Accounts & Finance",desig:"Manager Finance & Accounts",tLimit:20,tUsed:4,fLimit:30000,fUsed:6670,nLimit:5,nUsed:1,active:true,tier:'A'},
+  {name:"Arsalan Raheem",dept:"Accounts & Finance",desig:"Manager Finance & Accounts",tLimit:20,tUsed:11,fLimit:30000,fUsed:4950,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Tariq Amin",dept:"Accounts & Finance",desig:"Sr. Accounts Officer (Site)",tLimit:15,tUsed:0,fLimit:20000,fUsed:1950,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Muhammad Awais",dept:"Accounts & Finance",desig:"Jr. Accounts Officer (Site)",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Faiz Nawaz",dept:"Accounts & Finance",desig:"Accountant",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Mansoor Ahmad",dept:"Accounts & Finance",desig:"Assistant Accountant",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Ms Tehmina Rashid",dept:"Internal Audit",desig:"Head Of Internal Audit",tLimit:20,tUsed:0,fLimit:30000,fUsed:0,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Mr Saqib Javaid",dept:"Internal Audit",desig:"Manager Internal Audit",tLimit:20,tUsed:0,fLimit:30000,fUsed:0,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Mr Ahmed Qureshi",dept:"Internal Audit",desig:"Manager Internal Audit",tLimit:20,tUsed:0,fLimit:30000,fUsed:0,nLimit:5,nUsed:0,active:true,tier:'A'},
+  {name:"Mr. Sohail Ahmed",dept:"Internal Audit",desig:"Asst. Manager Internal Audit",tLimit:15,tUsed:12,fLimit:20000,fUsed:14670,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Mr Afnan Zaman",dept:"Internal Audit",desig:"Audit Executive",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Mr Qasim Ali",dept:"Internal Audit",desig:"Audit Executive",tLimit:7,tUsed:2,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Mr Waqar Ahmed",dept:"Internal Audit",desig:"Audit Executive",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Mr Ihtisham-Ul-Haq",dept:"Internal Audit",desig:"Audit Executive",tLimit:7,tUsed:2,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Mr Muhammad Zahid",dept:"Internal Audit",desig:"Audit Executive",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Mr Asfand Yar",dept:"Internal Audit",desig:"Audit Executive",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Raheel Alam",dept:"Internal Audit",desig:"Audit Executive",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Tahir Hussain",dept:"Internal Audit",desig:"Audit Executive",tLimit:7,tUsed:2,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Bilal Tariq",dept:"Technical",desig:"Senior Technical Manager",tLimit:20,tUsed:18,fLimit:30000,fUsed:20245,nLimit:5,nUsed:1,active:true,tier:'A'},
+  {name:"Haider Zaman",dept:"Chairlift & Machinery",desig:"Operator",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Mohammad Anwar",dept:"Chairlift & Machinery",desig:"Loading Base Station",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Airab Hussain",dept:"Chairlift & Machinery",desig:"Loading Base Station",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Habib Ullah",dept:"Chairlift & Machinery",desig:"Loading Return Station",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Hazrat Hussain",dept:"Chairlift & Machinery",desig:"Loading Return Station",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Major Omer Khan",dept:"Green Valley / Security",desig:"Security Manager",tLimit:20,tUsed:12,fLimit:30000,fUsed:8080,nLimit:5,nUsed:3,active:true,tier:'A'},
+  {name:"Habib Jan",dept:"Resort Security",desig:"Lady Searcher",tLimit:7,tUsed:2,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Nadeem Raza",dept:"PC 20 Rooms",desig:"Site Incharge",tLimit:15,tUsed:15,fLimit:20000,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Abid Ali",dept:"Civil & Construction",desig:"Site Engineer",tLimit:15,tUsed:0,fLimit:20000,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Said Kamal",dept:"Civil & Construction",desig:"Mixture Operator",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Adnan Bacha",dept:"Civil & Construction",desig:"Plumber",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Adnan Khan (Civil)",dept:"Civil & Construction",desig:"Civil Engineer",tLimit:15,tUsed:15,fLimit:20000,fUsed:19315,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Muhammad Wahab",dept:"Civil & Construction",desig:"Civil Engineer",tLimit:15,tUsed:0,fLimit:20000,fUsed:10540,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Akram",dept:"Electrical & Engineering",desig:"Electrical Engineer",tLimit:15,tUsed:15,fLimit:20000,fUsed:18720,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Muhammad Ishtiaq",dept:"Electrical & Engineering",desig:"Electrical Engineer",tLimit:15,tUsed:15,fLimit:20000,fUsed:19135,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Ismail Khan",dept:"Electrical & Engineering",desig:"Technician",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Gohar Zaman",dept:"Electrical & Engineering",desig:"Electrician",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Hussain Ahmad",dept:"Electrical & Engineering",desig:"Operator",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Syed Asif Ali Shah",dept:"Electrical & Engineering",desig:"Sub Engineer",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Jamal Ahmad",dept:"Food Stores & Treasury",desig:"Food Store Keeper",tLimit:7,tUsed:4,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Rashid Ali",dept:"Food Stores & Treasury",desig:"Store Keeper Helper",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Muhammad Momin Babar",dept:"Restaurant (F&B)",desig:"Incharge F&B",tLimit:20,tUsed:4,fLimit:30000,fUsed:845,nLimit:5,nUsed:1,active:true,tier:'A'},
+  {name:"Abcar Hussain",dept:"Restaurant (F&B)",desig:"Manager",tLimit:15,tUsed:13,fLimit:20000,fUsed:19385,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Farhan Malik",dept:"Restaurant (F&B)",desig:"Cashier",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Asad Ullah",dept:"Restaurant (F&B)",desig:"Asst. Manager",tLimit:15,tUsed:10,fLimit:20000,fUsed:12720,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Asmat Ali",dept:"Restaurant (F&B)",desig:"Supervisor",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Zahir Shah",dept:"Restaurant (F&B)",desig:"Kababi",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Suliman Khan",dept:"Restaurant (F&B)",desig:"Chef (Shwarma)",tLimit:7,tUsed:5,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Lal Zada",dept:"Restaurant (F&B)",desig:"Tea Seller",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Sheikh Rasheed",dept:"Restaurant (F&B)",desig:"Asst. Manager",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Anwar Ali",dept:"Restaurant (F&B)",desig:"Waiter",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Said Ali Shah",dept:"Restaurant (F&B)",desig:"House Keeper",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Irshad",dept:"Restaurant (F&B)",desig:"Burger Seller",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Laiq Zada",dept:"Restaurant (F&B)",desig:"Dish Washer",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Amjad Ali",dept:"Restaurant (F&B)",desig:"Waiter",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Nizam Uddin",dept:"Restaurant (F&B)",desig:"Waiter",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Umar Wahid",dept:"Restaurant (F&B)",desig:"Waiter",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Fayaz Muhammad",dept:"Restaurant (F&B)",desig:"Waiter",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Shehzad Alam",dept:"Sales & Services",desig:"DGM Ski Resort",tLimit:20,tUsed:17,fLimit:30000,fUsed:15045,nLimit:5,nUsed:4,active:true,tier:'A'},
+  {name:"Muhammad Haroon",dept:"Sales & Services",desig:"CSR",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Amna Zahid",dept:"Sales & Services",desig:"CSR",tLimit:7,tUsed:5,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Alishba",dept:"Sales & Services",desig:"CSR",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Ali Khan",dept:"Sales & Services",desig:"CSR",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Azhar Ali",dept:"Sales & Services",desig:"CSR",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Abeera Ejaz",dept:"Sales & Services",desig:"CSR",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Muhammad Saeed",dept:"Sales & Services",desig:"Ride Operator",tLimit:7,tUsed:4,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Muhammad Ali",dept:"Sales & Services",desig:"Ride Operator",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Abbas Khan",dept:"Sales & Services",desig:"Photographer",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Bawar Hussain",dept:"Samsons-Inn",desig:"Front Desk Manager",tLimit:15,tUsed:11,fLimit:20000,fUsed:14415,nLimit:0,nUsed:0,active:true,tier:'B'},
+  {name:"Akbar Alam",dept:"Samsons-Inn",desig:"Cook",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Mehboob Ali",dept:"Samsons-Inn",desig:"Cook Helper",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Amir Sultan",dept:"Malam House",desig:"Care Taker",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Khairo Rehman",dept:"Daily Wage - Admin",desig:"Supervisor",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Habib Ullah (DW)",dept:"Daily Wage - Admin",desig:"Cleaner",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Zahir Ullah",dept:"Daily Wage - Admin",desig:"Cleaner",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Arshad Ali",dept:"Daily Wage - Admin",desig:"Weldor",tLimit:7,tUsed:4,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Tahir",dept:"Daily Wage - Admin",desig:"Cleaner",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Khan Bacha",dept:"Daily Wage - Admin",desig:"Cleaner",tLimit:7,tUsed:5,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Saif Muhammad",dept:"Daily Wage - Admin",desig:"Conductor",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Rahmat Ullah",dept:"Daily Wage - Admin",desig:"Water Supplier",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Arsala Khan",dept:"Daily Wage - Admin",desig:"Labour",tLimit:7,tUsed:4,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Khan Said",dept:"Daily Wage - Admin",desig:"Mason",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Murad Ullah",dept:"Daily Wage - Admin",desig:"Dispenser",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Abbas Khan (DW)",dept:"Daily Wage - Admin",desig:"Cleaner",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Jamal Said",dept:"Daily Wages - Restaurant",desig:"Cook",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Amin Ullah",dept:"Daily Wages - Restaurant",desig:"Waiter",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Zakir Ullah",dept:"Daily Wages - Restaurant",desig:"Cleaner",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Anwar Ali (DWR)",dept:"Daily Wages - Restaurant",desig:"Dish Washer",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Aman Ullah",dept:"Daily Wages - Restaurant",desig:"Waiter",tLimit:7,tUsed:1,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Usman Ali",dept:"Daily Wages - Restaurant",desig:"Tandoorchi",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Dawood Khan",dept:"Daily Wages - Restaurant",desig:"Tandoorchi Helper",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Shakir Ullah",dept:"Daily Wages - Restaurant",desig:"Waiter",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Azim Ullah",dept:"Daily Wages - Restaurant",desig:"Pakora Maker",tLimit:7,tUsed:4,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Naeem Zada",dept:"Daily Wages - Restaurant",desig:"Tandoorchi",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Ihsan Ullah",dept:"Daily Wages - Restaurant",desig:"Waiter",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Akbar Ali",dept:"Daily Wages - Restaurant",desig:"Dish Washer",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Subhan Ullah",dept:"Daily Wages - Restaurant",desig:"Burger Saler",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Islam Ullah",dept:"Daily Wages - Restaurant",desig:"Tandoorchi",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Ayaz Ahmad",dept:"Daily Wages - Restaurant",desig:"Waiter",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Islam Ullah (DW2)",dept:"Daily Wages - Restaurant",desig:"Dish Washer",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"M. Anwar",dept:"Daily Wages - Restaurant",desig:"Guest House Cook",tLimit:7,tUsed:5,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Ajeeb Ullah",dept:"Daily Wage - Green Valley",desig:"Labour",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Sardar Ali",dept:"Daily Wage - Samsons Inn",desig:"Cleaner",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Irfan Ullah",dept:"Daily Wage - Samsons Inn",desig:"Waiter",tLimit:7,tUsed:3,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Amjad",dept:"Daily Wage - Samsons Inn",desig:"Dish Washer",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Hazrat Bilal",dept:"Daily Wage - Water Source",desig:"Trout Fish Care Taker",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Muhib Ullah",dept:"Daily Wage - Water Source",desig:"Water Pump Operator",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Jumair Ali",dept:"Daily Wage - Zipline",desig:"Zipline Operator",tLimit:7,tUsed:0,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Akbar Aman",dept:"Daily Wage - Zipline",desig:"Zipline Operator",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Imran Khan",dept:"Daily Wage - Zipline",desig:"Zipline Operator",tLimit:7,tUsed:6,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Noman Hussain",dept:"Daily Wage - Zipline",desig:"Zipline Operator",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Noman Khan",dept:"Daily Wage - Giant Swing",desig:"Giant Swing Operator",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+  {name:"Riaz Khan",dept:"Daily Wage - Giant Swing",desig:"Giant Swing Operator",tLimit:7,tUsed:7,fLimit:0,fUsed:0,nLimit:0,nUsed:0,active:true,tier:'C'},
+];
+
+let rosterFilter = 'all';
+let currentStep = 1, selectedBenefit = null, selectedEmp = null, foundEntry = null;
+
+// ── INIT ──────────────────────────────────────────────────────────
+(function init() {
+  rebuildEmpSelect();
+  document.getElementById('usage-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('approval-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('void-reason').addEventListener('change', function() {
+    document.getElementById('void-other-field').style.display = this.value==='Other'?'block':'none';
+  });
+  renderRoster();
+})();
+
+function rebuildEmpSelect() {
+  const sel = document.getElementById('emp-select');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">— Select employee —</option>';
+  roster.filter(e=>e.active).forEach((e,i) => {
+    const opt = document.createElement('option');
+    opt.value = roster.indexOf(e);
+    opt.textContent = e.name + ' — ' + e.dept;
+    sel.appendChild(opt);
+  });
+  sel.value = prev;
+  sel.removeEventListener('change', onEmpChange);
+  sel.addEventListener('change', onEmpChange);
+  updateStripCount();
+}
+
+function updateStripCount() {
+  const active = roster.filter(e=>e.active).length;
+  document.getElementById('strip-count').textContent = active + ' active employees';
+}
+
+// ── MODE SWITCH ───────────────────────────────────────────────────
+function switchMode(mode) {
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.mode-tab.'+mode).classList.add('active');
+  ['submit','void','manage'].forEach(m => {
+    document.getElementById(m+'-panel').classList.toggle('active', m===mode);
+  });
+  if (mode==='manage') renderRoster();
+}
+
+// ── SUBMIT FLOW ───────────────────────────────────────────────────
+async function onEmpChange() {
+  const idx = document.getElementById('emp-select').value;
+  if (idx==='') { selectedEmp=null; document.getElementById('emp-info-block').style.display='none'; return; }
+
+  // Use local roster data as a base (for dept/desig/tier info)
+  const localEmp = roster[idx];
+
+  // Show loading state immediately
+  document.getElementById('emp-info-block').style.display='block';
+  document.getElementById('disp-dept').textContent    = localEmp.dept;
+  document.getElementById('disp-desig').textContent   = localEmp.desig;
+  document.getElementById('disp-tickets').textContent = '⏳ Loading live balance...';
+  document.getElementById('disp-food').textContent    = '⏳ Loading live balance...';
+  document.getElementById('disp-nights').textContent  = '⏳ Loading live balance...';
+
+  // Set selectedEmp to local data first so the form is not blocked
+  selectedEmp = { ...localEmp };
+
+  // Query the Google Sheet for live balances
+  try {
+    const url = SHEETS_URL + '?action=getEmployee&name=' + encodeURIComponent(localEmp.name);
+    const res  = await fetch(url);
+    const json = await res.json();
+
+    if (json.status === 'ok' && json.employee) {
+      const live = json.employee;
+      // Merge live balances into selectedEmp
+      selectedEmp.tLimit   = live.tLimit;
+      selectedEmp.tUsed    = live.tUsed;
+      selectedEmp.fLimit   = live.fLimit;
+      selectedEmp.fUsed    = live.fUsed;
+      selectedEmp.nLimit   = live.nLimit;
+      selectedEmp.nUsed    = live.nUsed;
+      selectedEmp.active   = live.active;
+      document.getElementById('disp-tickets').textContent = live.tUsed+' / '+live.tLimit+' · '+(live.tLimit - live.tUsed)+' left';
+      document.getElementById('disp-food').textContent    = live.fLimit>0 ? 'PKR '+live.fUsed.toLocaleString()+' / '+live.fLimit.toLocaleString()+' · '+(live.fLimit-live.fUsed).toLocaleString()+' left' : 'Not entitled';
+      document.getElementById('disp-nights').textContent  = live.nLimit>0 ? live.nUsed+' / '+live.nLimit+' · '+(live.nLimit-live.nUsed)+' left' : 'Not entitled';
+    } else {
+      // Sheet lookup failed — fall back to local data with a warning
+      document.getElementById('disp-tickets').textContent = localEmp.tUsed+' / '+localEmp.tLimit+' · '+(localEmp.tLimit-localEmp.tUsed)+' left ⚠️ offline';
+      document.getElementById('disp-food').textContent    = localEmp.fLimit>0 ? 'PKR '+localEmp.fUsed.toLocaleString()+' / '+localEmp.fLimit.toLocaleString()+' · '+(localEmp.fLimit-localEmp.fUsed).toLocaleString()+' left ⚠️ offline' : 'Not entitled';
+      document.getElementById('disp-nights').textContent  = localEmp.nLimit>0 ? localEmp.nUsed+' / '+localEmp.nLimit+' · '+(localEmp.nLimit-localEmp.nUsed)+' left ⚠️ offline' : 'Not entitled';
+    }
+  } catch(err) {
+    // Network error — fall back gracefully
+    document.getElementById('disp-tickets').textContent = localEmp.tUsed+' / '+localEmp.tLimit+' · '+(localEmp.tLimit-localEmp.tUsed)+' left ⚠️ offline';
+    document.getElementById('disp-food').textContent    = localEmp.fLimit>0 ? 'PKR '+localEmp.fUsed.toLocaleString()+' / '+localEmp.fLimit.toLocaleString()+' · '+(localEmp.fLimit-localEmp.fUsed).toLocaleString()+' left ⚠️ offline' : 'Not entitled';
+    document.getElementById('disp-nights').textContent  = localEmp.nLimit>0 ? localEmp.nUsed+' / '+localEmp.nLimit+' · '+(localEmp.nLimit-localEmp.nUsed)+' left ⚠️ offline' : 'Not entitled';
+  }
+}
+
+function goStep(n) {
+  if (n>currentStep && !validateStep(currentStep)) return;
+  document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.step').forEach((s,i)=>{ s.classList.remove('active','done'); if(i+1<n)s.classList.add('done'); if(i+1===n)s.classList.add('active'); });
+  document.getElementById('sec-'+n).classList.add('active');
+  currentStep=n;
+  if (n===2&&selectedEmp) refreshBenefitCards();
+  if (n===4) buildReview();
+}
+
+function validateStep(n) {
+  if (n===1) {
+    if (!selectedEmp) { toast('Please select an employee'); return false; }
+    if (!document.getElementById('submitter').value.trim()) { toast('Please enter who is submitting'); return false; }
+  }
+  if (n===2) { if(!selectedBenefit){toast('Please select a benefit type');return false;} }
+  if (n===3) {
+    if (!document.getElementById('usage-date').value) { toast('Please enter date of usage'); return false; }
+    if (isOverLimit()) { toast('Request exceeds available balance'); return false; }
+    if (selectedBenefit==='tickets'&&parseInt(document.getElementById('qty-tickets').value)<1){toast('Enter number of tickets');return false;}
+    if (selectedBenefit==='food'&&(!document.getElementById('qty-food').value||parseFloat(document.getElementById('qty-food').value)<1)){toast('Enter food amount');return false;}
+    if (selectedBenefit==='nights'&&parseInt(document.getElementById('qty-nights').value)<1){toast('Enter number of nights');return false;}
+    if (!document.getElementById('approved-by').value.trim()){toast("Enter line manager's name");return false;}
+    if (!document.getElementById('approval-date').value){toast('Enter approval date');return false;}
+  }
+  return true;
+}
+
+function refreshBenefitCards() {
+  const e=selectedEmp;
+  setCardState('tickets',e.tLimit-e.tUsed<=0,(e.tLimit-e.tUsed<=0)?'Limit exhausted':(e.tLimit-e.tUsed)+' remaining');
+  setCardState('food',e.fLimit===0||e.fLimit-e.fUsed<=0,e.fLimit===0?'Not entitled':(e.fLimit-e.fUsed<=0)?'Limit exhausted':'PKR '+(e.fLimit-e.fUsed).toLocaleString()+' remaining');
+  setCardState('nights',e.nLimit===0||e.nLimit-e.nUsed<=0,e.nLimit===0?'Not entitled':(e.nLimit-e.nUsed<=0)?'Limit exhausted':(e.nLimit-e.nUsed)+' remaining');
+}
+
+function setCardState(type,disabled,tag) {
+  const card=document.getElementById('bc-'+type);
+  document.getElementById('zt-'+type).textContent=tag;
+  if(disabled){card.classList.add('disabled');card.classList.remove('selected');if(selectedBenefit===type)selectedBenefit=null;}
+  else{card.classList.remove('disabled');}
+}
+
+function selectBenefit(type) {
+  selectedBenefit=type;
+  document.querySelectorAll('.benefit-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('bc-'+type).classList.add('selected');
+  document.querySelectorAll('.qty-field').forEach(q=>q.classList.remove('visible'));
+  document.getElementById('qf-'+type).classList.add('visible');
+  checkLimitLive();
+}
+
+function adjustQty(type,delta) {
+  const el=document.getElementById('qty-'+type);
+  el.value=Math.max(1,(parseInt(el.value)||0)+delta);
+  checkLimitLive();
+}
+
+function getRequestedQty() {
+  if(!selectedBenefit)return 0;
+  if(selectedBenefit==='tickets')return parseInt(document.getElementById('qty-tickets').value)||0;
+  if(selectedBenefit==='food')return parseFloat(document.getElementById('qty-food').value)||0;
+  if(selectedBenefit==='nights')return parseInt(document.getElementById('qty-nights').value)||0;
+  return 0;
+}
+
+function getBalance() {
+  if(!selectedEmp||!selectedBenefit)return{limit:0,used:0,balance:0};
+  const e=selectedEmp;
+  if(selectedBenefit==='tickets')return{limit:e.tLimit,used:e.tUsed,balance:e.tLimit-e.tUsed};
+  if(selectedBenefit==='food')return{limit:e.fLimit,used:e.fUsed,balance:e.fLimit-e.fUsed};
+  if(selectedBenefit==='nights')return{limit:e.nLimit,used:e.nUsed,balance:e.nLimit-e.nUsed};
+}
+
+function isOverLimit(){return getRequestedQty()>getBalance().balance;}
+
+function checkLimitLive() {
+  if(!selectedBenefit||!selectedEmp)return;
+  const{limit,used,balance}=getBalance();
+  const qty=getRequestedQty(),remaining=balance-qty;
+  const banner=document.getElementById('limit-banner'),msg=document.getElementById('limit-msg'),icon=document.getElementById('limit-icon'),btn=document.getElementById('to-review-btn');
+  const unit=selectedBenefit==='food'?'PKR':selectedBenefit==='tickets'?'ticket(s)':'night(s)';
+  updateBar(selectedBenefit,limit,used,qty);
+  if(qty>balance){banner.className='limit-banner over';icon.textContent='⛔';msg.innerHTML='<strong>Exceeds available balance</strong>Requesting '+fmt(qty,unit)+' but only '+fmt(balance,unit)+' remaining. Submission blocked.';btn.disabled=true;}
+  else if(remaining===0){banner.className='limit-banner warn';icon.textContent='⚠️';msg.innerHTML='<strong>This will exhaust the full limit</strong>No balance will remain after this submission.';btn.disabled=false;}
+  else if(balance>0&&qty/balance>=0.8){banner.className='limit-banner warn';icon.textContent='⚠️';msg.innerHTML='<strong>Approaching limit</strong>'+fmt(qty,unit)+' requested · '+fmt(remaining,unit)+' will remain.';btn.disabled=false;}
+  else{banner.className='limit-banner';btn.disabled=false;}
+}
+
+function fmt(val,unit){return unit==='PKR'?'PKR '+val.toLocaleString():val+' '+unit;}
+
+function updateBar(type,limit,used,requested) {
+  const bar=document.getElementById('bar-'+type);
+  if(!bar||limit===0)return;
+  const usedPct=Math.min(100,(used/limit)*100),reqPct=Math.min(100-usedPct,(requested/limit)*100);
+  const over=(used+requested)>limit,color=over?'#c0392b':(usedPct+reqPct>80)?'#e67e22':'#1a6b72';
+  const unit=type==='food'?'PKR':type==='tickets'?'tickets':'nights';
+  bar.innerHTML='<div class="balance-bar-track"><div class="balance-bar-fill" style="width:'+(usedPct+reqPct)+'%;background:'+color+';"></div></div><div class="balance-bar-labels"><span>Used: '+fmt(used,unit)+(requested>0?' + '+fmt(requested,unit)+' requested':'')+'</span><span>Limit: '+fmt(limit,unit)+'</span></div>';
+}
+
+function buildReview() {
+  const e=selectedEmp;
+  const bNames={tickets:'🎫 Chairlift Ride Tickets',food:'🍽 Free Food',nights:'🛏 Inn Nights'};
+  const qty=getRequestedQty(),unit=selectedBenefit==='food'?'PKR':selectedBenefit==='tickets'?'ticket(s)':'night(s)',{balance}=getBalance();
+  const r=(l,v,cls)=>'<div class="summary-row"><span class="lbl">'+l+'</span><span class="val'+(cls?' '+cls:'')+'">'+v+'</span></div>';
+  document.getElementById('review-summary').innerHTML=r('Employee',e.name)+r('Department',e.dept)+r('Benefit Type',bNames[selectedBenefit],'hi')+r('Amount Requested',fmt(qty,unit),'hi')+r('Balance After',fmt(balance-qty,unit))+r('Date of Usage',document.getElementById('usage-date').value)+r('Guests',document.getElementById('guests').value||'—')+r('Submitted By',document.getElementById('submitter').value)+r('Approved By',document.getElementById('approved-by').value,'approved')+r('Approval Date',document.getElementById('approval-date').value,'approved')+r('Remarks',document.getElementById('remarks').value||'—');
+}
+
+async function submitEntry() {
+  const btn=document.getElementById('submit-btn'),lbl=document.getElementById('submit-label');
+  btn.disabled=true; lbl.innerHTML='<span class="spinner"></span> Logging...';
+  const e=selectedEmp,qty=getRequestedQty(),{balance}=getBalance();
+  const ref='FF-'+Date.now().toString(36).toUpperCase();
+  const payload={entryType:'SUBMISSION',ref,timestamp:new Date().toISOString(),employeeName:e.name,department:e.dept,designation:e.desig,benefitType:selectedBenefit,quantity:qty,balanceAfter:balance-qty,usageDate:document.getElementById('usage-date').value,guests:document.getElementById('guests').value||'',submittedBy:document.getElementById('submitter').value,approvedBy:document.getElementById('approved-by').value,approvalDate:document.getElementById('approval-date').value,remarks:document.getElementById('remarks').value||'',policyYear:'May 2025 - April 2026',limitTickets:e.tLimit,limitFood:e.fLimit,limitNights:e.nLimit,usedTicketsBefore:e.tUsed,usedFoodBefore:e.fUsed,usedNightsBefore:e.nUsed};
+  sessionLog[ref]=payload;
+  try{await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(err){}
+  await new Promise(r=>setTimeout(r,800));
+  document.querySelectorAll('#submit-panel .form-section,#submit-panel .steps').forEach(el=>el.style.display='none');
+  const sp=document.getElementById('submit-success');
+  sp.style.display='block'; sp.classList.add('visible');
+  document.getElementById('submit-success-msg').innerHTML='Approved by <strong>'+payload.approvedBy+'</strong> · Submitted for <strong>'+e.name+'</strong>.';
+  document.getElementById('submit-ref-code').textContent=ref;
+}
+
+// ── VOID FLOW ─────────────────────────────────────────────────────
+async function lookupRef() {
+  const raw = document.getElementById('void-ref').value.trim().toUpperCase();
+  document.getElementById('void-not-found').style.display='none';
+  document.getElementById('void-found-block').style.display='none';
+  foundEntry = null;
+  if (!raw) { toast('Enter a reference code'); return; }
+
+  // Show loading state on the button
+  const btn = document.querySelector('.btn-lookup');
+  const origLabel = btn.textContent;
+  btn.textContent = '⏳ Looking up...';
+  btn.disabled = true;
+
+  // Check session log first (fastest)
+  if (sessionLog[raw]) {
+    foundEntry = sessionLog[raw];
+    showFoundEntry(foundEntry);
+    btn.textContent = origLabel; btn.disabled = false;
+    return;
+  }
+
+  // Query the Google Sheet directly
+  try {
+    const url = SHEETS_URL + '?action=getSubmission&ref=' + encodeURIComponent(raw);
+    const res  = await fetch(url);
+    const json = await res.json();
+
+    if (json.status === 'ok' && json.entry) {
+      foundEntry = json.entry;
+      showFoundEntry(foundEntry);
+    } else {
+      document.getElementById('void-not-found').style.display='flex';
+    }
+  } catch(err) {
+    // Network error — fall back to session only message
+    document.getElementById('void-not-found').style.display='flex';
+    document.getElementById('void-not-found').querySelector('div').innerHTML =
+      '<strong>Could not reach Google Sheet</strong>Check your internet connection and try again. If the problem persists, contact Administration to void this entry directly in the master sheet.';
+  }
+
+  btn.textContent = origLabel;
+  btn.disabled = false;
+}
+
+function showFoundEntry(entry) {
+  const bNames={tickets:'🎫 Chairlift Ride Tickets',food:'🍽 Free Food',nights:'🛏 Inn Nights'};
+  const unit=entry.benefitType==='food'?'PKR':entry.benefitType==='tickets'?'ticket(s)':'night(s)';
+  const r=(l,v,cls)=>'<div class="summary-row"><span class="lbl">'+l+'</span><span class="val'+(cls?' '+cls:'')+'">'+v+'</span></div>';
+  document.getElementById('void-found-summary').innerHTML=r('Reference',entry.ref,'danger')+r('Employee',entry.employeeName)+r('Benefit',bNames[entry.benefitType])+r('Amount',fmt(entry.quantity,unit),'danger')+r('Usage Date',entry.usageDate)+r('Approved By',entry.approvedBy)+r('Submitted',new Date(entry.timestamp).toLocaleString());
+  document.getElementById('void-found-block').style.display='block';
+}
+
+async function submitVoid() {
+  if(!foundEntry)return;
+  const reason=document.getElementById('void-reason').value,other=document.getElementById('void-other').value.trim(),voidBy=document.getElementById('void-by').value.trim();
+  if(!reason){toast('Select a reason for voiding');return;}
+  if(reason==='Other'&&!other){toast('Please describe the reason');return;}
+  if(!voidBy){toast('Enter your name as person authorising this void');return;}
+  const btn=document.getElementById('void-submit-btn'),lbl=document.getElementById('void-submit-label');
+  btn.disabled=true; lbl.innerHTML='<span class="spinner"></span> Voiding...';
+  const voidRef='VOID-'+Date.now().toString(36).toUpperCase();
+  const payload={entryType:'VOID',ref:voidRef,originalRef:foundEntry.ref,timestamp:new Date().toISOString(),employeeName:foundEntry.employeeName,department:foundEntry.department,benefitType:foundEntry.benefitType,quantity:-Math.abs(foundEntry.quantity),voidReason:reason==='Other'?other:reason,voidedBy:voidBy,voidRemarks:document.getElementById('void-remarks').value||'',originalApprovedBy:foundEntry.approvedBy,policyYear:foundEntry.policyYear||'May 2025 - April 2026'};
+  try{await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(err){}
+  delete sessionLog[foundEntry.ref];
+  await new Promise(r=>setTimeout(r,800));
+  document.getElementById('vsec-1').style.display='none';
+  const sp=document.getElementById('void-success');
+  sp.style.display='block'; sp.classList.add('visible');
+  document.getElementById('void-success-msg').innerHTML='Entry <strong>'+foundEntry.ref+'</strong> for <strong>'+foundEntry.employeeName+'</strong> has been reversed and the balance restored.';
+  document.getElementById('void-ref-code').textContent=voidRef;
+}
+
+function resetVoid() {
+  ['void-ref','void-by','void-remarks','void-other'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('void-reason').value='';
+  document.getElementById('void-not-found').style.display='none';
+  document.getElementById('void-found-block').style.display='none';
+  document.getElementById('void-other-field').style.display='none';
+  foundEntry=null;
+}
+
+// ── EMPLOYEE MANAGEMENT ───────────────────────────────────────────
+function selectTier(t) {
+  selectedTier=t;
+  document.querySelectorAll('.tier-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tier-'+t.toLowerCase()).classList.add('active');
+  const custom = document.getElementById('custom-limits');
+  if (TIERS[t]) {
+    document.getElementById('tier-desc').textContent = TIERS[t].desc;
+    custom.style.display='none';
+  }
+}
+
+function getTierLimits() {
+  if(!selectedTier) return null;
+  return { tLimit: TIERS[selectedTier].tLimit, fLimit: TIERS[selectedTier].fLimit, nLimit: TIERS[selectedTier].nLimit };
+}
+
+async function addEmployee() {
+  const name=document.getElementById('new-name').value.trim();
+  const dept=document.getElementById('new-dept').value;
+  const desig=document.getElementById('new-desig').value.trim();
+  const addedBy=document.getElementById('new-addedby').value.trim();
+  if(!name){toast('Enter employee name');return;}
+  if(!dept){toast('Select a department');return;}
+  if(!desig){toast('Enter designation');return;}
+  if(!selectedTier){toast('Select a benefit tier');return;}
+  if(!addedBy){toast('Enter who is adding this employee');return;}
+  if(roster.find(e=>e.name.toLowerCase()===name.toLowerCase()&&e.active)){toast('An active employee with this name already exists');return;}
+
+  const limits=getTierLimits();
+  const newEmp={name,dept,desig,tier:selectedTier,tLimit:limits.tLimit,tUsed:0,fLimit:limits.fLimit,fUsed:0,nLimit:limits.nLimit,nUsed:0,active:true,addedBy,addedDate:new Date().toISOString()};
+  roster.push(newEmp);
+  rebuildEmpSelect();
+  renderRoster();
+
+  const payload={entryType:'EMP_ADD',timestamp:new Date().toISOString(),employeeName:name,department:dept,designation:desig,tier:selectedTier,tLimit:limits.tLimit,fLimit:limits.fLimit,nLimit:limits.nLimit,addedBy,policyYear:'May 2025 - April 2026'};
+  try{await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(err){}
+
+  // Clear form
+  ['new-name','new-desig','new-addedby'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('new-dept').value='';
+  document.querySelectorAll('.tier-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tier-desc').textContent='20 tickets · PKR 30,000 food · 5 nights';
+  selectedTier=null;
+
+  showManageSuccess('Employee Added', '<strong>'+name+'</strong> ('+dept+') has been added to the F&F policy register as <strong>Tier '+selectedTier+'</strong>.');
+  // Since selectedTier is cleared by now, reconstruct message
+  document.getElementById('manage-success-msg').innerHTML='<strong>'+name+'</strong> ('+dept+') has been added to the F&amp;F policy register.';
+}
+
+function removeEmployee(idx) {
+  const emp=roster[idx];
+  if(!emp||!emp.active){toast('Employee already inactive');return;}
+  const reason=document.getElementById('remove-reason').value||'Not specified';
+  const removedBy=document.getElementById('remove-by').value.trim()||'Administration';
+  emp.active=false;
+  emp.removedDate=new Date().toISOString();
+  emp.removeReason=reason;
+  emp.removedBy=removedBy;
+  rebuildEmpSelect();
+  renderRoster();
+  const payload={entryType:'EMP_REMOVE',timestamp:new Date().toISOString(),employeeName:emp.name,department:emp.dept,reason,removedBy,policyYear:'May 2025 - April 2026'};
+  try{fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}catch(err){}
+  showManageSuccess('Employee Removed','<strong>'+emp.name+'</strong> has been deactivated. Their usage history is preserved. You can restore them at any time.');
+}
+
+function restoreEmployee(idx) {
+  const emp=roster[idx];
+  if(!emp||emp.active){toast('Employee is already active');return;}
+  emp.active=true;
+  delete emp.removedDate; delete emp.removeReason; delete emp.removedBy;
+  rebuildEmpSelect();
+  renderRoster();
+  showManageSuccess('Employee Restored','<strong>'+emp.name+'</strong> has been restored to the active register and can now submit benefit requests.');
+}
+
+function showManageSuccess(title, msg) {
+  document.querySelector('#manage-panel .card-body > *:not(#manage-success)').style.display='none';
+  document.querySelector('#manage-panel .emp-list').style.display='none';
+  const sp=document.getElementById('manage-success');
+  sp.style.display='block'; sp.classList.add('visible');
+  document.getElementById('manage-success-title').textContent=title;
+  document.getElementById('manage-success-msg').innerHTML=msg;
+}
+
+function closeManageSuccess() {
+  document.getElementById('manage-success').style.display='none';
+  document.getElementById('manage-success').classList.remove('visible');
+  document.querySelector('#manage-panel .card-body > .emp-manage-grid').style.display='';
+  document.querySelector('#manage-panel .emp-list').style.display='';
+  renderRoster();
+}
+
+// ── ROSTER RENDER ─────────────────────────────────────────────────
+function setFilter(f,btn) {
+  rosterFilter=f;
+  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderRoster();
+}
+
+function renderRoster() {
+  const q=(document.getElementById('emp-search').value||'').toLowerCase();
+  let filtered=roster.filter(e=>{
+    if(rosterFilter==='active'&&!e.active)return false;
+    if(rosterFilter==='inactive'&&e.active)return false;
+    return e.name.toLowerCase().includes(q)||e.dept.toLowerCase().includes(q)||e.desig.toLowerCase().includes(q);
+  });
+  document.getElementById('roster-count').textContent='('+filtered.length+' shown)';
+  const tbody=document.getElementById('roster-body');
+  tbody.innerHTML='';
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:24px;">No employees match your filter.</td></tr>';return;}
+  filtered.forEach(emp=>{
+    const idx=roster.indexOf(emp);
+    const tr=document.createElement('tr');
+    tr.innerHTML=
+      '<td style="font-weight:600;font-size:13px;">'+emp.name+'<div style="font-size:11px;color:var(--text-light);font-weight:400;margin-top:2px;">'+emp.desig+'</div></td>'+
+      '<td style="font-size:12px;color:var(--text-mid);">'+emp.dept+'</td>'+
+      '<td><span class="tier-badge">'+emp.tier+'</span></td>'+
+      '<td><span class="status-badge '+(emp.active?'status-active':'status-inactive')+'">'+(emp.active?'Active':'Inactive')+'</span></td>'+
+      '<td style="text-align:center;">'+(emp.active?'<button class="remove-emp-btn" onclick="removeEmployee('+idx+')">Remove</button>':'<button class="restore-emp-btn" onclick="restoreEmployee('+idx+')">Restore</button>')+'</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────
+function toast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
