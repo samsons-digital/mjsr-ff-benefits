@@ -344,6 +344,61 @@ textarea{resize:vertical;min-height:70px;}
 
 @media(max-width:600px){.card-body{padding:18px 16px;}.nav-tabs{gap:4px;}.nav-tab{font-size:10px;padding:8px 7px;min-width:80px;}}
 @media(min-width:1200px){.card-body{padding:32px 40px;}.nav-tabs{gap:8px;}.dash-tile{padding:22px;}}
+/* ── Extended Dashboard ── */
+.dash-section-title{font-size:11px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.08em;margin:24px 0 14px;display:flex;align-items:center;gap:8px;}
+.dash-section-title::before{content:'';display:block;width:3px;height:13px;border-radius:2px;flex-shrink:0;}
+.dst-gold::before{background:var(--gold);}
+.dst-danger::before{background:var(--danger);}
+.dst-warn::before{background:#e67e22;}
+.dst-teal::before{background:var(--teal);}
+.dst-purple::before{background:var(--purple);}
+.dash-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:8px;}
+@media(max-width:700px){.dash-meta-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:420px){.dash-meta-grid{grid-template-columns:1fr;}}
+.meta-tile{background:var(--mist);border-radius:12px;padding:14px 16px;border:1px solid var(--border);}
+.meta-tile.mt-danger{background:var(--danger-bg);border-color:var(--danger-border);}
+.meta-tile.mt-warn{background:var(--warn-bg);border-color:var(--warn-border);}
+.meta-tile.mt-success{background:rgba(45,122,95,0.07);border-color:rgba(45,122,95,0.2);}
+.meta-tile.mt-gold{background:rgba(200,150,62,0.07);border-color:rgba(200,150,62,0.2);}
+.meta-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-mid);margin-bottom:5px;}
+.meta-value{font-family:'DM Serif Display',serif;font-size:24px;font-weight:700;line-height:1;margin-bottom:3px;}
+.meta-value.mv-danger{color:var(--danger);}
+.meta-value.mv-warn{color:#e67e22;}
+.meta-value.mv-success{color:var(--success);}
+.meta-value.mv-gold{color:var(--gold);}
+.meta-value.mv-teal{color:var(--teal);}
+.meta-sub{font-size:10px;color:var(--text-light);}
+.year-bar-wrap{margin-top:6px;}
+.year-bar-track{height:7px;background:rgba(0,0,0,0.08);border-radius:4px;overflow:hidden;}
+.year-bar-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));border-radius:4px;transition:width 0.8s ease;}
+.exhausted-list,.warning-list{max-height:200px;overflow-y:auto;border-radius:10px;border:1px solid var(--border);}
+.alert-emp-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px;gap:10px;}
+.alert-emp-row:last-child{border-bottom:none;}
+.alert-emp-row.ae-danger{background:rgba(139,32,32,0.03);}
+.alert-emp-row.ae-warn{background:rgba(230,126,34,0.04);}
+.ae-name{font-weight:600;color:var(--text);}
+.ae-dept{font-size:10px;color:var(--text-light);margin-top:1px;}
+.ae-badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;}
+.ae-badge{font-size:9px;font-weight:700;padding:2px 8px;border-radius:100px;white-space:nowrap;}
+.aeb-t-red{background:#f8d7da;color:#721c24;}
+.aeb-f-red{background:#f8d7da;color:#721c24;}
+.aeb-n-red{background:#f8d7da;color:#721c24;}
+.aeb-t-warn{background:#fff3cd;color:#856404;}
+.aeb-f-warn{background:#fff3cd;color:#856404;}
+.aeb-n-warn{background:#fff3cd;color:#856404;}
+.month-chart{display:flex;align-items:flex-end;gap:5px;height:80px;padding:0 4px;}
+.month-bar-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;}
+.month-bar{width:100%;border-radius:4px 4px 0 0;background:var(--teal);transition:height 0.5s ease;min-height:2px;}
+.month-label{font-size:8px;color:var(--text-light);font-family:'DM Mono',monospace;white-space:nowrap;}
+.month-val{font-size:8px;color:var(--text-mid);font-weight:600;}
+.top10-table{width:100%;border-collapse:collapse;font-size:12px;}
+.top10-table th{background:var(--navy);color:rgba(255,255,255,0.8);font-size:9px;text-transform:uppercase;letter-spacing:0.05em;padding:8px 10px;text-align:left;}
+.top10-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.top10-table tr:last-child td{border-bottom:none;}
+.top10-table tr:hover td{background:#f9f9fb;}
+.rank-num{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;color:var(--text-light);}
+.rank-num.gold{color:var(--gold);}
+.no-alerts{text-align:center;padding:20px;color:var(--text-light);font-size:12px;}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeUp  {from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn  {from{opacity:0}to{opacity:1}}
@@ -1272,27 +1327,36 @@ function resetSubmit(){
 // ════════════════════════════════════════════════════════════════
 async function loadDashboard(){
   document.getElementById('dash-content').innerHTML='<div class="dash-loading">⏳ Loading dashboard data...</div>';
-  try {
-    const res  = await fetch(SHEETS_URL+'?action=getRoster&t='+Date.now());
-    const json = await res.json();
-    if(json.status==='ok'&&json.roster) renderDashboard(json.roster);
-    else document.getElementById('dash-content').innerHTML='<div class="dash-loading" style="color:var(--danger);">⛔ Could not load dashboard data. Check connection.</div>';
-  } catch(e){
-    // Fallback: build dashboard from local roster data
-    renderDashboard(roster.filter(emp=>emp.active).map(emp=>({
+  let rosterData=null, logData=null;
+  try{
+    const [rRes,lRes] = await Promise.all([
+      fetch(SHEETS_URL+'?action=getRoster&t='+Date.now()),
+      fetch(SHEETS_URL+'?action=getLog&t='+Date.now())
+    ]);
+    const rJson = await rRes.json();
+    const lJson = await lRes.json();
+    if(rJson.status==='ok') rosterData = rJson.roster;
+    if(lJson.status==='ok') { logData = lJson.log; allLogData = lJson.log; }
+  }catch(e){}
+
+  if(!rosterData){
+    rosterData = roster.filter(emp=>emp.active).map(emp=>({
       name:emp.name,dept:emp.dept,desig:emp.desig,
       tLimit:emp.tLimit,tUsed:emp.tUsed,tBalance:emp.tLimit-emp.tUsed,
       fLimit:emp.fLimit,fUsed:emp.fUsed,fBalance:emp.fLimit-emp.fUsed,
-      nLimit:emp.nLimit,nUsed:emp.nUsed,nBalance:emp.nLimit-emp.nUsed,
-      active:true
-    })));
+      nLimit:emp.nLimit,nUsed:emp.nUsed,nBalance:emp.nLimit-emp.nUsed,active:true
+    }));
     document.getElementById('dash-policy-label').textContent=policyYear+' · Local data (Sheet unreachable)';
+  } else {
+    document.getElementById('dash-policy-label').textContent=policyYear+' · Live from Google Sheet';
   }
+  renderDashboard(rosterData, logData||[]);
 }
 
-function renderDashboard(data){
+function renderDashboard(data, log){
   const active = data.filter(e=>e.active!==false&&e.active!=='INACTIVE');
-  // Totals
+
+  // ── Core totals ──────────────────────────────────────────────
   const tTot=active.reduce((s,e)=>s+(e.tLimit||0),0);
   const tUsd=active.reduce((s,e)=>s+(e.tUsed||0),0);
   const fTot=active.reduce((s,e)=>s+(e.fLimit||0),0);
@@ -1302,8 +1366,9 @@ function renderDashboard(data){
   const tPct=tTot>0?Math.round(tUsd/tTot*100):0;
   const fPct=fTot>0?Math.round(fUsd/fTot*100):0;
   const nPct=nTot>0?Math.round(nUsd/nTot*100):0;
+  const barColor=(pct)=>pct>=100?'#c0392b':pct>=80?'#e67e22':'#1a6b72';
 
-  // Department aggregation (by ticket usage %)
+  // ── Department bars ───────────────────────────────────────────
   const depts={};
   active.forEach(e=>{
     if(!depts[e.dept])depts[e.dept]={tL:0,tU:0,fL:0,fU:0,nL:0,nU:0,count:0};
@@ -1316,53 +1381,218 @@ function renderDashboard(data){
     .map(([name,d])=>({name,pct:d.tL>0?Math.round(d.tU/d.tL*100):0,...d}))
     .sort((a,b)=>b.pct-a.pct);
 
-  const barColor=(pct)=>pct>=100?'#c0392b':pct>=80?'#e67e22':'#1a6b72';
+  // ── Policy year countdown ─────────────────────────────────────
+  const now = new Date();
+  // Parse policy year end from policyYear string e.g. "May 2025 – April 2026"
+  let yearEndDate = null, daysLeft = null, daysPct = 0;
+  try {
+    const parts = policyYear.split(/[–-]/);
+    if(parts.length>=2){
+      const endStr = parts[parts.length-1].trim();
+      // "April 2026" → last day of that month
+      const d = new Date(endStr+' 30');
+      if(!isNaN(d)){
+        yearEndDate = new Date(d.getFullYear(), d.getMonth()+1, 0); // last day of month
+        const startStr = parts[0].trim();
+        const startDate = new Date(startStr+' 1');
+        const totalDays = Math.round((yearEndDate-startDate)/(1000*60*60*24));
+        daysLeft = Math.max(0,Math.round((yearEndDate-now)/(1000*60*60*24)));
+        const elapsed = totalDays - daysLeft;
+        daysPct = totalDays>0?Math.min(100,Math.round(elapsed/totalDays*100)):0;
+      }
+    }
+  }catch(e){}
 
-  let html=`
-  <div class="dash-tiles">
+  // ── Log-based metrics ─────────────────────────────────────────
+  const submissions = log.filter(r=>String(r[7]||'')!=='VOID'&&String(r[7]||'')!=='EMP_ADD'&&String(r[7]||'')!=='EMP_REMOVE'&&String(r[7]||'')!=='YEAR_ROLLOVER'&&r[0]);
+  const voids       = log.filter(r=>String(r[7]||'')==='VOID');
+  const noApprover  = submissions.filter(r=>!String(r[19]||'').trim()||String(r[19]||'').trim()===''||String(r[19]||'').toLowerCase()==='n/a');
+  const voidRate    = submissions.length>0?((voids.length/submissions.length)*100).toFixed(1):0;
+
+  // Last submission date
+  let lastSubDate = '—';
+  const subDates = submissions.map(r=>{try{return new Date(r[1]);}catch(e){return null;}}).filter(Boolean);
+  if(subDates.length>0){
+    const latest = new Date(Math.max(...subDates));
+    lastSubDate = latest.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  }
+
+  // Monthly breakdown (col 3 = usage date or col 1 = timestamp)
+  const monthCounts = {};
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  submissions.forEach(r=>{
+    try{
+      const d = new Date(r[3]||r[1]);
+      if(!isNaN(d)){
+        const key = monthNames[d.getMonth()]+' '+d.getFullYear();
+        monthCounts[key]=(monthCounts[key]||0)+1;
+      }
+    }catch(e){}
+  });
+  // Build sorted month array covering last 12 months
+  const monthArr=[];
+  for(let i=11;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const key=monthNames[d.getMonth()]+' '+d.getFullYear();
+    monthArr.push({key,label:monthNames[d.getMonth()],count:monthCounts[key]||0});
+  }
+  const maxMonth=Math.max(...monthArr.map(m=>m.count),1);
+
+  // Top 10 by food usage value (highest PKR consumed)
+  const top10 = [...active]
+    .filter(e=>e.fUsed>0||e.tUsed>0)
+    .map(e=>({name:e.name,dept:e.dept,tUsed:e.tUsed||0,fUsed:e.fUsed||0,nUsed:e.nUsed||0,
+      score:(e.fUsed||0)+(e.tUsed||0)*1900+(e.nUsed||0)*5000}))
+    .sort((a,b)=>b.score-a.score)
+    .slice(0,10);
+
+  // Exhausted employees (100% on any benefit)
+  const exhausted = active.filter(e=>
+    (e.tLimit>0&&e.tUsed>=e.tLimit)||
+    (e.fLimit>0&&e.fUsed>=e.fLimit)||
+    (e.nLimit>0&&e.nUsed>=e.nLimit)
+  );
+
+  // Warning employees (80–99% on any benefit)
+  const warnings = active.filter(e=>
+    !exhausted.includes(e)&&(
+    (e.tLimit>0&&e.tUsed/e.tLimit>=0.8)||
+    (e.fLimit>0&&e.fUsed/e.fLimit>=0.8)||
+    (e.nLimit>0&&e.nUsed/e.nLimit>=0.8))
+  );
+
+  // ── BUILD HTML ────────────────────────────────────────────────
+  let html = '';
+
+  // Row 1: 3 main tiles
+  html+=`<div class="dash-tiles">
     <div class="dash-tile dt-tickets">
-      <div class="dt-icon">🎫</div>
-      <div class="dt-label">Chairlift Tickets</div>
-      <div class="dt-value tv">${tUsd} <span style="font-size:16px;color:var(--text-light);">/ ${tTot}</span></div>
-      <div class="dt-sub">${tPct}% of total allocation used · ${active.length} employees</div>
+      <div class="dt-icon">🎫</div><div class="dt-label">Chairlift Tickets</div>
+      <div class="dt-value tv">${tUsd} <span style="font-size:15px;color:var(--text-light);">/ ${tTot}</span></div>
+      <div class="dt-sub">${tPct}% used · ${active.length} employees</div>
       <div class="dt-bar-wrap"><div class="dt-bar-track"><div class="dt-bar-fill dtb-t" style="width:${tPct}%;background:${barColor(tPct)};"></div></div></div>
       <div class="dt-pct">${tTot-tUsd} tickets remaining</div>
     </div>
     <div class="dash-tile dt-food">
-      <div class="dt-icon">🍽</div>
-      <div class="dt-label">Free Food (PKR)</div>
-      <div class="dt-value fv">${(fUsd/1000).toFixed(1)}k <span style="font-size:16px;color:var(--text-light);">/ ${(fTot/1000).toFixed(0)}k</span></div>
-      <div class="dt-sub">${fPct}% of total food budget used</div>
+      <div class="dt-icon">🍽</div><div class="dt-label">Free Food (PKR)</div>
+      <div class="dt-value fv">${(fUsd/1000).toFixed(1)}k <span style="font-size:15px;color:var(--text-light);">/ ${(fTot/1000).toFixed(0)}k</span></div>
+      <div class="dt-sub">${fPct}% of food budget used</div>
       <div class="dt-bar-wrap"><div class="dt-bar-track"><div class="dt-bar-fill dtb-f" style="width:${fPct}%;background:${barColor(fPct)};"></div></div></div>
       <div class="dt-pct">PKR ${(fTot-fUsd).toLocaleString()} remaining</div>
     </div>
     <div class="dash-tile dt-nights">
-      <div class="dt-icon">🛏</div>
-      <div class="dt-label">Inn Nights</div>
-      <div class="dt-value nv">${nUsd} <span style="font-size:16px;color:var(--text-light);">/ ${nTot}</span></div>
-      <div class="dt-sub">${nPct}% of total nights used</div>
+      <div class="dt-icon">🛏</div><div class="dt-label">Inn Nights</div>
+      <div class="dt-value nv">${nUsd} <span style="font-size:15px;color:var(--text-light);">/ ${nTot}</span></div>
+      <div class="dt-sub">${nPct}% of nights used</div>
       <div class="dt-bar-wrap"><div class="dt-bar-track"><div class="dt-bar-fill dtb-n" style="width:${nPct}%;background:${barColor(nPct)};"></div></div></div>
       <div class="dt-pct">${nTot-nUsd} nights remaining</div>
     </div>
-  </div>
-  <div class="dept-section">
-    <div class="dept-title">Ticket Usage by Department</div>`;
+  </div>`;
 
+  // Row 2: Meta tiles
+  const dayLeftsLabel = daysLeft!==null ? daysLeft+' days left' : 'Unknown';
+  const daysPctLabel  = daysLeft!==null ? daysPct+'% of year elapsed' : '';
+  html+=`<div class="dash-meta-grid">
+    <div class="meta-tile mt-gold">
+      <div class="meta-label">⏳ Policy Year</div>
+      <div class="meta-value mv-gold" style="font-size:28px;">${daysLeft!==null?daysLeft:'—'}</div>
+      <div class="meta-sub">days remaining</div>
+      ${daysLeft!==null?`<div class="year-bar-wrap" style="margin-top:8px;"><div class="year-bar-track"><div class="year-bar-fill" style="width:${daysPct}%;"></div></div><div style="font-size:9px;color:var(--text-light);margin-top:3px;">${daysPctLabel}</div></div>`:''}
+    </div>
+    <div class="meta-tile mt-success">
+      <div class="meta-label">💰 Food Budget Exposure</div>
+      <div class="meta-value mv-success" style="font-size:20px;">PKR ${fUsd.toLocaleString()}</div>
+      <div class="meta-sub">consumed of PKR ${fTot.toLocaleString()} total</div>
+      <div style="font-size:10px;color:${barColor(fPct)};font-weight:700;margin-top:4px;">${fPct}% utilised</div>
+    </div>
+    <div class="meta-tile ${voidRate>10?'mt-warn':''}">
+      <div class="meta-label">📊 Data Quality</div>
+      <div class="meta-value ${parseFloat(voidRate)>10?'mv-warn':'mv-teal'}">${voidRate}%</div>
+      <div class="meta-sub">void rate · ${voids.length} voids / ${submissions.length} submissions</div>
+    </div>
+    <div class="meta-tile">
+      <div class="meta-label">📅 Last Submission</div>
+      <div class="meta-value mv-teal" style="font-size:16px;margin-top:4px;">${lastSubDate}</div>
+      <div class="meta-sub">${submissions.length} total submissions this year</div>
+      ${noApprover.length>0?`<div style="font-size:10px;color:var(--danger);font-weight:700;margin-top:6px;">⚠️ ${noApprover.length} missing approver</div>`:'<div style="font-size:10px;color:var(--success);font-weight:700;margin-top:6px;">✓ All submissions approved</div>'}
+    </div>
+  </div>`;
+
+  // Row 3: Monthly chart + Top 10
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:4px;">
+    <div>
+      <div class="dash-section-title dst-teal">📅 Monthly Submissions (Last 12 Months)</div>
+      <div class="month-chart">`;
+  monthArr.forEach(m=>{
+    const h = maxMonth>0?Math.round((m.count/maxMonth)*70):2;
+    html+=`<div class="month-bar-col">
+      <div class="month-val">${m.count||''}</div>
+      <div class="month-bar" style="height:${Math.max(h,2)}px;background:${m.count===maxMonth?'var(--gold)':'var(--teal)'};" title="${m.key}: ${m.count} submissions"></div>
+      <div class="month-label">${m.label}</div>
+    </div>`;
+  });
+  html+=`</div></div>
+    <div>
+      <div class="dash-section-title dst-gold">🏆 Top 10 by Usage Value</div>
+      <div style="max-height:180px;overflow-y:auto;border-radius:10px;border:1px solid var(--border);">
+      <table class="top10-table"><thead><tr><th>#</th><th>Employee</th><th>Tickets</th><th>Food (PKR)</th></tr></thead><tbody>`;
+  top10.forEach((e,i)=>{
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    html+=`<tr><td class="rank-num ${i<3?'gold':''}">${medal||'#'+(i+1)}</td>
+      <td style="font-weight:600;font-size:11px;">${e.name}<div style="font-size:9px;color:var(--text-light);">${e.dept.length>20?e.dept.substring(0,20)+'…':e.dept}</div></td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;">${e.tUsed}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;">PKR ${e.fUsed.toLocaleString()}</td></tr>`;
+  });
+  if(!top10.length) html+='<tr><td colspan="4" class="no-alerts">No usage recorded yet</td></tr>';
+  html+=`</tbody></table></div></div></div>`;
+
+  // Row 4: Exhausted + Warning lists side by side
+  html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:4px;">`;
+
+  // Exhausted
+  html+=`<div>
+    <div class="dash-section-title dst-danger">🔴 Limit Exhausted (${exhausted.length})</div>
+    ${exhausted.length===0
+      ? '<div class="no-alerts" style="background:rgba(45,122,95,0.05);border-radius:10px;border:1px solid rgba(45,122,95,0.15);">✓ No employees have exhausted their limits</div>'
+      : '<div class="exhausted-list">'+exhausted.map(e=>{
+          const badges=[];
+          if(e.tLimit>0&&e.tUsed>=e.tLimit) badges.push('<span class="ae-badge aeb-t-red">🎫 '+e.tUsed+'/'+e.tLimit+'</span>');
+          if(e.fLimit>0&&e.fUsed>=e.fLimit) badges.push('<span class="ae-badge aeb-f-red">🍽 PKR '+e.fUsed.toLocaleString()+'</span>');
+          if(e.nLimit>0&&e.nUsed>=e.nLimit) badges.push('<span class="ae-badge aeb-n-red">🛏 '+e.nUsed+'/'+e.nLimit+'</span>');
+          return '<div class="alert-emp-row ae-danger"><div><div class="ae-name">'+e.name+'</div><div class="ae-dept">'+e.dept+'</div></div><div class="ae-badges">'+badges.join('')+'</div></div>';
+        }).join('')+'</div>'
+    }
+  </div>`;
+
+  // Warning
+  html+=`<div>
+    <div class="dash-section-title dst-warn">🟡 Approaching Limit (${warnings.length})</div>
+    ${warnings.length===0
+      ? '<div class="no-alerts" style="background:rgba(26,107,114,0.04);border-radius:10px;border:1px solid rgba(26,107,114,0.1);">✓ No employees near their limits</div>'
+      : '<div class="warning-list">'+warnings.map(e=>{
+          const badges=[];
+          if(e.tLimit>0&&e.tUsed/e.tLimit>=0.8) badges.push('<span class="ae-badge aeb-t-warn">🎫 '+Math.round(e.tUsed/e.tLimit*100)+'%</span>');
+          if(e.fLimit>0&&e.fUsed/e.fLimit>=0.8) badges.push('<span class="ae-badge aeb-f-warn">🍽 '+Math.round(e.fUsed/e.fLimit*100)+'%</span>');
+          if(e.nLimit>0&&e.nUsed/e.nLimit>=0.8) badges.push('<span class="ae-badge aeb-n-warn">🛏 '+Math.round(e.nUsed/e.nLimit*100)+'%</span>');
+          return '<div class="alert-emp-row ae-warn"><div><div class="ae-name">'+e.name+'</div><div class="ae-dept">'+e.dept+'</div></div><div class="ae-badges">'+badges.join('')+'</div></div>';
+        }).join('')+'</div>'
+    }
+  </div></div>`;
+
+  // Row 5: Department bars
+  html+=`<div class="dept-section" style="margin-top:8px;">
+    <div class="dept-title">Ticket Usage by Department</div>`;
   deptArr.forEach(d=>{
-    const pct=d.pct;
-    const col=barColor(pct);
+    const pct=d.pct,col=barColor(pct);
     html+=`<div class="dept-row">
-      <div class="dept-row-head">
-        <span class="dept-name">${d.name}</span>
-        <span class="dept-stat">${d.tU} / ${d.tL} tickets · ${d.count} staff</span>
-      </div>
+      <div class="dept-row-head"><span class="dept-name">${d.name}</span><span class="dept-stat">${d.tU} / ${d.tL} tickets · ${d.count} staff</span></div>
       <div class="dept-bar-track"><div class="dept-bar-fill" style="width:${pct}%;background:${col};"></div></div>
       <div class="dept-bar-pct">${pct}% used${pct>=100?' 🔴':pct>=80?' 🟡':''}</div>
     </div>`;
   });
-  html+='</div>';
+  html+=`</div>`;
+
   document.getElementById('dash-content').innerHTML=html;
-  document.getElementById('dash-policy-label').textContent=policyYear+' · Live from Google Sheet';
 }
 
 // ════════════════════════════════════════════════════════════════
