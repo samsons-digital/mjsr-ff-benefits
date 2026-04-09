@@ -906,7 +906,7 @@ textarea{resize:vertical;min-height:70px;}
 // ════════════════════════════════════════════════════════════════
 //  CONFIG
 // ════════════════════════════════════════════════════════════════
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbygJafCozIu0aZp0UrYCSxjXFGMOBLZFbsIv441I7lamNRjMwyoArh2Cei1NTADPj4y/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzE9PJyitX6o1jaEidhponjyNPoLidgJZQgVR8IlqeilurdBjC54Ws2mT1ktazb4Sqs/exec';
 const PIN        = '1234';
 const TIERS      = {
   A:{desc:'20 tickets · PKR 30,000 food · 5 nights',tLimit:20,fLimit:30000,nLimit:5},
@@ -1417,36 +1417,16 @@ function renderDashboard(data, log){
     lastSubDate = latest.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
   }
 
-  // Monthly breakdown — try multiple columns and handle serial numbers
+  // Monthly breakdown — dates now come as clean ISO strings from Apps Script
   const monthCounts = {};
   const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  function parseAnyDate(val){
-    if(!val) return null;
-    // Already a Date object
-    if(val instanceof Date && !isNaN(val)) return val;
-    // Excel serial number (number between 40000 and 60000 is a plausible date)
-    const num = Number(val);
-    if(!isNaN(num) && num > 40000 && num < 60000){
-      // Excel epoch is 1 Jan 1900, JS epoch is 1 Jan 1970
-      // 25569 = days between the two epochs
-      return new Date((num - 25569) * 86400 * 1000);
-    }
-    // String date — try direct parse
-    const d = new Date(val);
-    if(!isNaN(d)) return d;
-    // Try dd/MM/yyyy format
-    const parts = String(val).match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
-    if(parts){
-      return new Date(parts[3]+'-'+parts[2].padStart(2,'0')+'-'+parts[1].padStart(2,'0'));
-    }
-    return null;
-  }
-
   submissions.forEach(r=>{
-    // Try usage date (col 3), then timestamp (col 1)
-    const d = parseAnyDate(r[3]) || parseAnyDate(r[1]);
-    if(d && !isNaN(d)){
+    // Col 3 = usage date, col 1 = timestamp — both now ISO strings from Apps Script
+    const raw = r[3] || r[1];
+    if(!raw) return;
+    const d = new Date(raw);
+    if(!isNaN(d)){
       const key = monthNames[d.getMonth()]+' '+d.getFullYear();
       monthCounts[key]=(monthCounts[key]||0)+1;
     }
