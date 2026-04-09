@@ -1568,11 +1568,8 @@ function renderDashboard(data, log){
     ${exhausted.length===0
       ? '<div class="no-alerts" style="background:rgba(45,122,95,0.05);border-radius:10px;border:1px solid rgba(45,122,95,0.15);">✓ No employees have exhausted their limits</div>'
       : '<div class="exhausted-list">'+exhausted.map(e=>{
-          const badges=[];
-          if(e.tLimit>0&&e.tUsed>=e.tLimit) badges.push('<span class="ae-badge aeb-t-red">🎫 '+e.tUsed+'/'+e.tLimit+'</span>');
-          if(e.fLimit>0&&e.fUsed>=e.fLimit) badges.push('<span class="ae-badge aeb-f-red">🍽 PKR '+e.fUsed.toLocaleString()+'</span>');
-          if(e.nLimit>0&&e.nUsed>=e.nLimit) badges.push('<span class="ae-badge aeb-n-red">🛏 '+e.nUsed+'/'+e.nLimit+'</span>');
-          return '<div class="alert-emp-row ae-danger"><div><div class="ae-name">'+e.name+'</div><div class="ae-dept">'+e.dept+'</div></div><div class="ae-badges">'+badges.join('')+'</div></div>';
+          const badge='<span class="ae-badge aeb-t-red">🎫 '+e.tUsed+'/'+e.tLimit+' tickets</span>';
+          return '<div class="alert-emp-row ae-danger"><div><div class="ae-name">'+e.name+'</div><div class="ae-dept">'+e.dept+'</div></div><div class="ae-badges">'+badge+'</div></div>';
         }).join('')+'</div>'
     }
   </div>`;
@@ -1583,11 +1580,9 @@ function renderDashboard(data, log){
     ${warnings.length===0
       ? '<div class="no-alerts" style="background:rgba(26,107,114,0.04);border-radius:10px;border:1px solid rgba(26,107,114,0.1);">✓ No employees near their limits</div>'
       : '<div class="warning-list">'+warnings.map(e=>{
-          const badges=[];
-          if(e.tLimit>0&&e.tUsed/e.tLimit>=0.8) badges.push('<span class="ae-badge aeb-t-warn">🎫 '+Math.round(e.tUsed/e.tLimit*100)+'%</span>');
-          if(e.fLimit>0&&e.fUsed/e.fLimit>=0.8) badges.push('<span class="ae-badge aeb-f-warn">🍽 '+Math.round(e.fUsed/e.fLimit*100)+'%</span>');
-          if(e.nLimit>0&&e.nUsed/e.nLimit>=0.8) badges.push('<span class="ae-badge aeb-n-warn">🛏 '+Math.round(e.nUsed/e.nLimit*100)+'%</span>');
-          return '<div class="alert-emp-row ae-warn"><div><div class="ae-name">'+e.name+'</div><div class="ae-dept">'+e.dept+'</div></div><div class="ae-badges">'+badges.join('')+'</div></div>';
+          const pct=Math.round(e.tUsed/e.tLimit*100);
+          const badge='<span class="ae-badge aeb-t-warn">🎫 '+e.tUsed+'/'+e.tLimit+' ('+pct+'%)</span>';
+          return '<div class="alert-emp-row ae-warn"><div><div class="ae-name">'+e.name+'</div><div class="ae-dept">'+e.dept+'</div></div><div class="ae-badges">'+badge+'</div></div>';
         }).join('')+'</div>'
     }
   </div></div>`;
