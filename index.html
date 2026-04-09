@@ -906,7 +906,7 @@ textarea{resize:vertical;min-height:70px;}
 // ════════════════════════════════════════════════════════════════
 //  CONFIG
 // ════════════════════════════════════════════════════════════════
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzE9PJyitX6o1jaEidhponjyNPoLidgJZQgVR8IlqeilurdBjC54Ws2mT1ktazb4Sqs/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw_rhPPwzroYsgSPpbQpr9_GCCjtSwdEeI-soPp1rHPKYo7STZBCgMV97UQE8hLBds6/exec';
 const PIN        = '1234';
 const TIERS      = {
   A:{desc:'20 tickets · PKR 30,000 food · 5 nights',tLimit:20,fLimit:30000,nLimit:5},
@@ -1135,7 +1135,11 @@ async function onEmpChange(){
   document.getElementById('live-badge').style.color = '#856404';
 
   try {
-    const res  = await fetch(SHEETS_URL+'?action=getEmployee&name='+encodeURIComponent(local.name));
+    const res  = await fetch(SHEETS_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({entryType:'READ', action:'getEmployee', name:local.name})
+    });
     const json = await res.json();
     if (json.status==='ok'&&json.employee){
       const live = json.employee;
@@ -1325,19 +1329,26 @@ function resetSubmit(){
 // ════════════════════════════════════════════════════════════════
 //  DASHBOARD
 // ════════════════════════════════════════════════════════════════
+async function postRead(action){
+  const res = await fetch(SHEETS_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({entryType:'READ', action})
+  });
+  return await res.json();
+}
+
 async function loadDashboard(){
   document.getElementById('dash-content').innerHTML='<div class="dash-loading">⏳ Loading dashboard data...</div>';
   let rosterData=null, logData=null;
   try{
-    const [rRes,lRes] = await Promise.all([
-      fetch(SHEETS_URL+'?action=getRoster&t='+Date.now()),
-      fetch(SHEETS_URL+'?action=getLog&t='+Date.now())
+    const [rJson, lJson] = await Promise.all([
+      postRead('getRoster'),
+      postRead('getLog')
     ]);
-    const rJson = await rRes.json();
-    const lJson = await lRes.json();
     if(rJson.status==='ok') rosterData = rJson.roster;
     if(lJson.status==='ok') { logData = lJson.log; allLogData = lJson.log; }
-  }catch(e){}
+  }catch(e){ console.log('Dashboard load error:',e); }
 
   if(!rosterData){
     rosterData = roster.filter(emp=>emp.active).map(emp=>({
@@ -1610,7 +1621,11 @@ async function lookupRef(){
   btn.innerHTML='<span class="spinner"></span>';btn.disabled=true;
   if(sessionLog[raw]){foundEntry=sessionLog[raw];showFoundEntry(foundEntry);btn.textContent='Look Up';btn.disabled=false;return;}
   try{
-    const res=await fetch(SHEETS_URL+'?action=getSubmission&ref='+encodeURIComponent(raw));
+    const res=await fetch(SHEETS_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({entryType:'READ', action:'getSubmission', ref:raw})
+    });
     const json=await res.json();
     if(json.status==='ok'&&json.entry){foundEntry=json.entry;showFoundEntry(foundEntry);}
     else document.getElementById('void-not-found').style.display='flex';
@@ -1773,11 +1788,10 @@ async function loadReports(){
   if(allLogData.length>0){renderReportTable();return;}
   document.getElementById('report-content').innerHTML='<div class="audit-loading">⏳ Loading report data...</div>';
   try{
-    const res=await fetch(SHEETS_URL+'?action=getLog&t='+Date.now());
-    const json=await res.json();
+    const json=await postRead('getLog');
     if(json.status==='ok'&&json.log){allLogData=json.log;renderReportTable();}
     else document.getElementById('report-content').innerHTML='<div class="audit-loading" style="color:var(--danger);">⛔ Could not load report data.</div>';
-  }catch(e){document.getElementById('report-content').innerHTML='<div class="audit-loading" style="color:var(--danger);">⛔ Could not reach Google Sheet. Check your Apps Script deployment.</div>';}
+  }catch(e){document.getElementById('report-content').innerHTML='<div class="audit-loading" style="color:var(--danger);">⛔ Could not reach Google Sheet.</div>';}
 }
 
 function filterReports(){renderReportTable();}
@@ -1860,11 +1874,10 @@ function exportCSV(){
 async function loadAuditLog(){
   document.getElementById('audit-content').innerHTML='<div class="audit-loading">⏳ Loading audit log...</div>';
   try{
-    const res=await fetch(SHEETS_URL+'?action=getLog&t='+Date.now());
-    const json=await res.json();
+    const json=await postRead('getLog');
     if(json.status==='ok'&&json.log){allLogData=json.log;renderAuditLog(json.log);}
     else document.getElementById('audit-content').innerHTML='<div class="audit-loading" style="color:var(--danger);">⛔ Could not load audit log.</div>';
-  }catch(e){document.getElementById('audit-content').innerHTML='<div class="audit-loading" style="color:var(--danger);">⛔ Could not reach Google Sheet. Check your Apps Script deployment.</div>';}
+  }catch(e){document.getElementById('audit-content').innerHTML='<div class="audit-loading" style="color:var(--danger);">⛔ Could not reach Google Sheet.</div>';}
 }
 
 function renderAuditLog(data){
