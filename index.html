@@ -342,6 +342,36 @@ textarea{resize:vertical;min-height:70px;}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--navy);color:white;border-radius:100px;padding:10px 20px;font-size:12px;box-shadow:var(--shadow-lg);z-index:1000;opacity:0;transition:opacity 0.3s;border:1px solid rgba(200,150,62,0.3);white-space:nowrap;}
 .toast.show{opacity:1;}
 
+
+/* ── Staff Upload ── */
+.upload-box{border:2px dashed rgba(200,150,62,0.4);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;background:rgba(200,150,62,0.03);margin-bottom:16px;position:relative;}
+.upload-box:hover,.upload-box.drag-over{border-color:var(--gold);background:rgba(200,150,62,0.08);}
+.upload-box input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:32px;margin-bottom:8px;}
+.upload-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.upload-sub{font-size:11px;color:var(--text-light);}
+.upload-filename{font-size:12px;color:var(--teal);font-weight:600;margin-top:8px;font-family:'DM Mono',monospace;}
+.template-btn{padding:7px 14px;border-radius:8px;border:1.5px solid rgba(200,150,62,0.4);background:transparent;color:var(--gold);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:'Sora',sans-serif;margin-bottom:16px;}
+.template-btn:hover{background:rgba(200,150,62,0.1);}
+.preview-table-wrap{max-height:260px;overflow-y:auto;border-radius:10px;border:1px solid var(--border);margin-bottom:16px;}
+.preview-table{width:100%;border-collapse:collapse;font-size:11px;}
+.preview-table th{background:var(--navy);color:rgba(255,255,255,0.8);font-size:9px;text-transform:uppercase;letter-spacing:0.05em;padding:8px 10px;text-align:left;position:sticky;top:0;}
+.preview-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.preview-table tr:last-child td{border-bottom:none;}
+.preview-new{background:rgba(45,122,95,0.06);}
+.preview-updated{background:rgba(200,150,62,0.06);}
+.preview-deactivated{background:rgba(139,32,32,0.05);}
+.change-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;}
+.cb-new{background:#d4edda;color:#155724;}
+.cb-updated{background:#fff3cd;color:#856404;}
+.cb-deactivated{background:#f8d7da;color:#721c24;}
+.cb-unchanged{background:#e9ecef;color:#6c757d;}
+.upload-summary{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.us-chip{padding:7px 14px;border-radius:8px;font-size:11px;font-weight:600;}
+.us-new{background:#d4edda;color:#155724;}
+.us-updated{background:#fff3cd;color:#856404;}
+.us-deactivated{background:#f8d7da;color:#721c24;}
+.us-unchanged{background:#e9ecef;color:#6c757d;}
 @media(max-width:600px){.card-body{padding:18px 16px;}.nav-tabs{gap:4px;}.nav-tab{font-size:10px;padding:8px 7px;min-width:80px;}}
 @media(min-width:1200px){.card-body{padding:32px 40px;}.nav-tabs{gap:8px;}.dash-tile{padding:22px;}}
 /* ── Extended Dashboard ── */
@@ -834,10 +864,35 @@ textarea{resize:vertical;min-height:70px;}
           <li>Create a fresh FF_Master_Log tab ready for the new year</li>
           <li>Reset all employee used values (Tickets Used, Food Used, Nights Used) to zero in FF_Summary</li>
           <li>Update the Policy Year label across the system</li>
-          <li>All employee limits are preserved at their current tier values</li>
+          <li>Apply the uploaded staff list: add new, reactivate returning, deactivate leavers</li>
+          <li>All employee limits are set from the uploaded tier values</li>
           <li>No employee records, historical submissions or void entries are deleted</li>
         </ul>
         <p>After the rollover, submissions will continue immediately on the new policy year with zero used amounts.</p>
+      </div>
+
+      <div class="section-title g-accent" style="margin-top:4px;">👥 New Year Staff List Upload</div>
+      <p style="font-size:12px;color:var(--text-mid);margin-bottom:12px;line-height:1.6;">Upload a CSV or Excel file with the staff list for the new policy year. The system will add new employees, reactivate returning ones, and deactivate anyone not on the list. Review the preview before committing.</p>
+      <button class="template-btn" onclick="downloadTemplate()">⬇ Download CSV Template</button>
+      <div class="upload-box" id="upload-box" ondragover="uploadDragOver(event)" ondragleave="uploadDragLeave()" ondrop="uploadDrop(event)">
+        <input type="file" id="staff-file" accept=".csv,.xlsx,.xls" onchange="handleStaffFile(this.files[0])">
+        <div class="upload-icon">📂</div>
+        <div class="upload-title">Drop your CSV or Excel file here</div>
+        <div class="upload-sub">or click to browse · Columns required: Name, Department, Designation, Tier</div>
+        <div class="upload-filename" id="upload-filename"></div>
+      </div>
+      <div id="staff-preview" style="display:none;">
+        <div class="upload-summary" id="upload-summary"></div>
+        <div class="preview-table-wrap">
+          <table class="preview-table">
+            <thead><tr><th>Name</th><th>Department</th><th>Designation</th><th>Tier</th><th>Change</th></tr></thead>
+            <tbody id="preview-body"></tbody>
+          </table>
+        </div>
+        <div class="limit-banner info" style="display:flex;margin-bottom:16px;">
+          <div class="lb-icon">ℹ️</div>
+          <div><strong>Review before proceeding</strong>These changes will be applied when you click Execute Year Rollover below. Deactivated employees keep all historical data.</div>
+        </div>
       </div>
 
       <div class="section-title g-accent">New Policy Year Configuration</div>
@@ -1910,6 +1965,187 @@ function renderAuditLog(data){
 }
 
 // ════════════════════════════════════════════════════════════════
+//  STAFF UPLOAD
+// ════════════════════════════════════════════════════════════════
+let parsedStaffList = null;
+
+function downloadTemplate(){
+  const csv = 'Name,Department,Designation,Tier\n' +
+    'Martin Schultz,Resort Senior Management,General Manager,A\n' +
+    'Bilal Tariq,Technical,Senior Technical Manager,A\n' +
+    'Abid Nawaz,Administration Sec & Proc,Asst. Admin,B\n' +
+    'Haider Zaman,Chairlift & Machinery,Operator,C\n';
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'MJSR_FF_Staff_Template.csv';
+  a.click();
+}
+
+function uploadDragOver(e){ e.preventDefault(); document.getElementById('upload-box').classList.add('drag-over'); }
+function uploadDragLeave(){ document.getElementById('upload-box').classList.remove('drag-over'); }
+function uploadDrop(e){ e.preventDefault(); uploadDragLeave(); if(e.dataTransfer.files[0]) handleStaffFile(e.dataTransfer.files[0]); }
+
+function handleStaffFile(file){
+  if(!file) return;
+  document.getElementById('upload-filename').textContent = '📎 ' + file.name;
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if(ext === 'csv'){
+    const reader = new FileReader();
+    reader.onload = e => parseStaffCSV(e.target.result);
+    reader.readAsText(file);
+  } else if(ext === 'xlsx' || ext === 'xls'){
+    // Parse Excel using SheetJS if available, else show error
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        // Simple XLSX parsing — extract first sheet as CSV
+        const data = new Uint8Array(e.target.result);
+        // Manual XLSX not feasible without library — prompt CSV instead
+        toast('Please save your Excel file as CSV first (File → Save As → CSV)');
+        document.getElementById('upload-filename').textContent = '';
+      } catch(err){ toast('Could not read Excel file. Please save as CSV and re-upload.'); }
+    };
+    reader.readAsArrayBuffer(file);
+  }
+}
+
+function parseStaffCSV(text){
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if(lines.length < 2){ toast('CSV appears empty or has no data rows'); return; }
+
+  // Detect header row
+  const header = lines[0].split(',').map(h => h.trim().toLowerCase());
+  const iName  = header.findIndex(h => h.includes('name'));
+  const iDept  = header.findIndex(h => h.includes('dept') || h.includes('department'));
+  const iDesig = header.findIndex(h => h.includes('desig'));
+  const iTier  = header.findIndex(h => h.includes('tier'));
+
+  if(iName<0||iDept<0||iDesig<0||iTier<0){
+    toast('CSV must have columns: Name, Department, Designation, Tier');
+    return;
+  }
+
+  const newList = [];
+  for(let i=1;i<lines.length;i++){
+    const cols = lines[i].split(',').map(v=>v.trim().replace(/^"|"$/g,''));
+    const name  = cols[iName]||'';
+    const dept  = cols[iDept]||'';
+    const desig = cols[iDesig]||'';
+    const tier  = (cols[iTier]||'').toUpperCase();
+    if(!name) continue;
+    if(!['A','B','C'].includes(tier)){ toast('Row '+i+': Tier must be A, B, or C for "'+name+'"'); continue; }
+    newList.push({name, dept, desig, tier});
+  }
+
+  if(!newList.length){ toast('No valid staff rows found in file'); return; }
+  parsedStaffList = newList;
+  buildStaffPreview(newList);
+}
+
+function buildStaffPreview(newList){
+  const newNames  = newList.map(e=>e.name.toLowerCase());
+  const rosterNames = roster.map(e=>e.name.toLowerCase());
+
+  let added=0, updated=0, deactivated=0, unchanged=0;
+  const rows = [];
+
+  // New or updated
+  newList.forEach(e=>{
+    const existing = roster.find(r=>r.name.toLowerCase()===e.name.toLowerCase());
+    if(!existing){
+      rows.push({...e, change:'new'});
+      added++;
+    } else {
+      const tierChanged = existing.tier !== e.tier;
+      const reactivated = !existing.active;
+      if(tierChanged||reactivated){
+        rows.push({...e, change:'updated', note: reactivated?'Reactivate':(tierChanged?'Tier: '+existing.tier+'→'+e.tier:'')});
+        updated++;
+      } else {
+        rows.push({...e, change:'unchanged'});
+        unchanged++;
+      }
+    }
+  });
+
+  // Deactivated (active in roster, not in new list)
+  roster.filter(r=>r.active).forEach(r=>{
+    if(!newNames.includes(r.name.toLowerCase())){
+      rows.push({name:r.name, dept:r.dept, desig:r.desig, tier:r.tier, change:'deactivated'});
+      deactivated++;
+    }
+  });
+
+  // Summary chips
+  document.getElementById('upload-summary').innerHTML =
+    '<span class="us-chip us-new">➕ '+added+' new</span>'+
+    '<span class="us-chip us-updated">🔄 '+updated+' updated/reactivated</span>'+
+    '<span class="us-chip us-deactivated">🚫 '+deactivated+' to deactivate</span>'+
+    '<span class="us-chip us-unchanged">✓ '+unchanged+' unchanged</span>';
+
+  // Preview table
+  const tbody = document.getElementById('preview-body');
+  tbody.innerHTML = '';
+  // Sort: new first, then updated, then deactivated, then unchanged
+  const order = {new:0, updated:1, deactivated:2, unchanged:3};
+  rows.sort((a,b)=>order[a.change]-order[b.change]).forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.className = 'preview-'+r.change;
+    const badge = r.change==='new'?'<span class="change-badge cb-new">NEW</span>':
+                  r.change==='updated'?'<span class="change-badge cb-updated">'+(r.note||'UPDATED')+'</span>':
+                  r.change==='deactivated'?'<span class="change-badge cb-deactivated">DEACTIVATE</span>':
+                  '<span class="change-badge cb-unchanged">—</span>';
+    tr.innerHTML = '<td style="font-weight:600;">'+r.name+'</td>'+
+      '<td style="font-size:10px;">'+r.dept+'</td>'+
+      '<td style="font-size:10px;">'+r.desig+'</td>'+
+      '<td><span class="tier-badge">'+r.tier+'</span></td>'+
+      '<td>'+badge+'</td>';
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('staff-preview').style.display = 'block';
+  toast('✓ '+newList.length+' staff loaded — review changes below');
+}
+
+function applyStaffUpload(){
+  if(!parsedStaffList) return;
+  const newNames = parsedStaffList.map(e=>e.name.toLowerCase());
+
+  // Add or update
+  parsedStaffList.forEach(e=>{
+    const existing = roster.find(r=>r.name.toLowerCase()===e.name.toLowerCase());
+    const lim = TIERS[e.tier];
+    if(!existing){
+      roster.push({name:e.name, dept:e.dept, desig:e.desig, tier:e.tier,
+        tLimit:lim.tLimit, tUsed:0, fLimit:lim.fLimit, fUsed:0,
+        nLimit:lim.nLimit, nUsed:0, active:true});
+    } else {
+      existing.dept   = e.dept;
+      existing.desig  = e.desig;
+      existing.tier   = e.tier;
+      existing.tLimit = lim.tLimit;
+      existing.fLimit = lim.fLimit;
+      existing.nLimit = lim.nLimit;
+      existing.tUsed  = 0;
+      existing.fUsed  = 0;
+      existing.nUsed  = 0;
+      existing.active = true;
+    }
+  });
+
+  // Deactivate those not on list
+  roster.forEach(r=>{
+    if(r.active && !newNames.includes(r.name.toLowerCase())){
+      r.active = false;
+    }
+  });
+
+  rebuildEmpSelect();
+  renderRoster();
+}
+
+// ════════════════════════════════════════════════════════════════
 //  YEAR ROLLOVER — PIN GATE
 // ════════════════════════════════════════════════════════════════
 function pinInput(el,nextId){
@@ -1975,7 +2211,8 @@ async function executeRollover(){
   try{
     const payload={entryType:'YEAR_ROLLOVER',timestamp:new Date().toISOString(),
       oldYear:policyYear,newYear,authorisedBy:by,
-      action:'rollover'};
+      action:'rollover',
+      staffList: parsedStaffList || null};
 
     setProgress(40,'Archiving current year log...');
     await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
