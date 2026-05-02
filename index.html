@@ -446,7 +446,7 @@ textarea{resize:vertical;min-height:70px;}
     <span class="logo-text">MJSR · Samsons Group</span>
   </div>
   <h1>Friends &amp; <em>Family</em> Benefit Portal</h1>
-  <p class="subtitle" id="policy-year-label">May 2025 – April 2026 · Administration &amp; Compliance System</p>
+  <p class="subtitle" id="policy-year-label">May 2026 – April 2027 · Administration &amp; Compliance System</p>
 </header>
 
 <div class="nav-tabs">
@@ -607,7 +607,7 @@ textarea{resize:vertical;min-height:70px;}
     <div class="card-header-icon">📊</div>
     <div class="card-header-text">
       <h2>Benefits Dashboard</h2>
-      <p id="dash-policy-label">May 2025 – April 2026 · Live from Google Sheet</p>
+      <p id="dash-policy-label">May 2026 – April 2027 · Live from Google Sheet</p>
     </div>
   </div>
   <div class="card-body">
@@ -948,7 +948,7 @@ textarea{resize:vertical;min-height:70px;}
 </div><!-- /card -->
 
 <div class="info-strip">
-  <div class="info-chip"><div class="ic">📅</div><div class="it"><strong id="strip-year">May 2025 – April 2026</strong>Policy Year</div></div>
+  <div class="info-chip"><div class="ic">📅</div><div class="it"><strong id="strip-year">May 2026 – April 2027</strong>Policy Year</div></div>
   <div class="info-chip"><div class="ic">👥</div><div class="it"><strong id="strip-count">132 employees</strong>Active roster</div></div>
   <div class="info-chip"><div class="ic">✅</div><div class="it"><strong>Approval Required</strong>All submissions</div></div>
   <div class="info-chip"><div class="ic">🔒</div><div class="it"><strong>Audit Trail</strong>Voids never deleted</div></div>
@@ -978,7 +978,7 @@ let selectedTier   = null;
 let foundEntry     = null;
 let rosterFilter   = 'all';
 let allLogData     = [];   // cached for reports & audit
-let policyYear     = 'May 2025 – April 2026';
+let policyYear     = 'May 2026 – April 2027';
 
 // ── Roster (base data — overridden by live Sheet on select) ──────
 let roster = [
@@ -1449,7 +1449,7 @@ function renderDashboard(data, log){
 
   // ── Policy year countdown ─────────────────────────────────────
   const now = new Date();
-  // Parse policy year end from policyYear string e.g. "May 2025 – April 2026"
+  // Parse policy year end from policyYear string e.g. "May 2026 – April 2027"
   let yearEndDate = null, daysLeft = null, daysPct = 0;
   try {
     const parts = policyYear.split(/[–-]/);
