@@ -911,9 +911,9 @@ textarea{resize:vertical;min-height:70px;}
         <input type="text" id="rollover-by" placeholder="GM / Senior Admin name">
       </div>
 
-      <div class="confirm-check-wrap" onclick="toggleRolloverCheck()">
-        <input type="checkbox" id="rollover-confirm">
-        <label for="rollover-confirm">I confirm I want to perform the year rollover. I understand this will reset all usage balances and cannot be undone.</label>
+      <div class="confirm-check-wrap" onclick="if(event.target.type!=='checkbox')toggleRolloverCheck()">
+        <input type="checkbox" id="rollover-confirm" onclick="event.stopPropagation();document.getElementById('rollover-btn').disabled=!this.checked;">
+        <label for="rollover-confirm" style="cursor:pointer;">I confirm I want to perform the year rollover. I understand this will reset all usage balances and cannot be undone.</label>
       </div>
 
       <div class="btn-row">
@@ -2165,8 +2165,10 @@ function checkPin(){
     document.getElementById('pin-error').textContent='';
     // Pre-fill suggested new year
     const d=new Date();
-    document.getElementById('new-year-from').value='May '+(d.getFullYear()+1);
-    document.getElementById('new-year-to').value='April '+(d.getFullYear()+2);
+    // If we're past May, suggest the upcoming May→April cycle
+    const nextYear = d.getMonth() >= 4 ? d.getFullYear()+1 : d.getFullYear();
+    document.getElementById('new-year-from').value='May '+nextYear;
+    document.getElementById('new-year-to').value='April '+(nextYear+1);
   } else {
     document.getElementById('pin-error').textContent='Incorrect PIN — try again';
     ['p1','p2','p3','p4'].forEach(id=>{const el=document.getElementById(id);el.value='';});
@@ -2185,6 +2187,16 @@ function toggleRolloverCheck(){
   cb.checked=!cb.checked;
   document.getElementById('rollover-btn').disabled=!cb.checked;
 }
+// Also wire the checkbox directly so clicking it works independently
+document.addEventListener('DOMContentLoaded',function(){
+  const cb=document.getElementById('rollover-confirm');
+  if(cb){
+    cb.addEventListener('change',function(e){
+      e.stopPropagation();
+      document.getElementById('rollover-btn').disabled=!this.checked;
+    });
+  }
+});
 
 async function executeRollover(){
   const newFrom=document.getElementById('new-year-from').value.trim();
