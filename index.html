@@ -1119,8 +1119,7 @@ let roster = [
 // ════════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════════
-(function init(){
-  rebuildEmpSelect();
+(async function init(){
   document.getElementById('usage-date').value    = new Date().toISOString().split('T')[0];
   document.getElementById('approval-date').value = new Date().toISOString().split('T')[0];
   document.getElementById('void-reason').addEventListener('change',function(){
@@ -1129,7 +1128,46 @@ let roster = [
   document.getElementById('rollover-confirm').addEventListener('change',function(){
     document.getElementById('rollover-btn').disabled = !this.checked;
   });
+
+  // Load live roster from Sheet on startup
+  // This ensures employee additions, removals and the new year staff list
+  // are always reflected — not just the hardcoded array
+  await loadLiveRoster();
 })();
+
+async function loadLiveRoster(){
+  try{
+    const json = await postRead('getRoster');
+    if(json.status==='ok' && json.roster && json.roster.length>0){
+      // Merge live Sheet data into roster
+      // Preserve tier info from local array where Sheet doesn't carry it
+      const localByName = {};
+      roster.forEach(e => localByName[e.name.toLowerCase()] = e);
+
+      roster = json.roster.map(live => {
+        const local = localByName[live.name.toLowerCase()];
+        return {
+          name:    live.name,
+          dept:    live.dept   || (local&&local.dept)   || '',
+          desig:   live.desig  || (local&&local.desig)  || '',
+          tier:    (local&&local.tier) || (live.tLimit>=20?'A':live.tLimit>=15?'B':'C'),
+          tLimit:  live.tLimit || 0,
+          tUsed:   live.tUsed  || 0,
+          fLimit:  live.fLimit || 0,
+          fUsed:   live.fUsed  || 0,
+          nLimit:  live.nLimit || 0,
+          nUsed:   live.nUsed  || 0,
+          active:  live.active !== false && live.active !== 'INACTIVE'
+        };
+      });
+      console.log('Roster loaded from Sheet: '+roster.filter(e=>e.active).length+' active employees');
+    }
+  } catch(e){
+    console.log('Sheet unreachable on init — using local roster');
+  }
+  rebuildEmpSelect();
+  renderRoster();
+}
 
 function rebuildEmpSelect(){
   const sel  = document.getElementById('emp-select');
