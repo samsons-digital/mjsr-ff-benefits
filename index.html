@@ -889,9 +889,15 @@ textarea{resize:vertical;min-height:70px;}
             <tbody id="preview-body"></tbody>
           </table>
         </div>
-        <div class="limit-banner info" style="display:flex;margin-bottom:16px;">
+        <div class="limit-banner info" style="display:flex;margin-bottom:12px;">
           <div class="lb-icon">ℹ️</div>
           <div><strong>Review before proceeding</strong>These changes will be applied when you click Execute Year Rollover below. Deactivated employees keep all historical data.</div>
+        </div>
+        <div style="text-align:right;margin-bottom:16px;">
+          <button class="btn btn-primary" id="sync-staff-btn" onclick="syncStaffToSheet()" style="background:linear-gradient(135deg,#22959f,#1a6b72);">
+            <span id="sync-staff-label">🔄 Sync Staff List to Sheet Now</span>
+          </button>
+          <div style="font-size:10px;color:var(--text-light);margin-top:5px;">Pushes all additions, removals and tier changes directly to FF_Summary — no rollover required</div>
         </div>
       </div>
 
@@ -2146,6 +2152,81 @@ function buildStaffPreview(newList){
   toast('✓ '+newList.length+' staff loaded — review changes below');
 }
 
+async function syncStaffToSheet(){
+  if(!parsedStaffList || !parsedStaffList.length){
+    toast('No staff list loaded — upload a CSV file first');
+    return;
+  }
+  const btn = document.getElementById('sync-staff-btn');
+  const lbl = document.getElementById('sync-staff-label');
+  btn.disabled = true;
+  lbl.innerHTML = '<span class="spinner"></span> Syncing...';
+
+  const newNames = parsedStaffList.map(e=>e.name.toLowerCase());
+  let added=0, updated=0, deactivated=0, errors=0;
+
+  // Step 1 — Add or update each employee in the new list
+  for(const emp of parsedStaffList){
+    const lim = TIERS[emp.tier];
+    const existing = roster.find(r=>r.name.toLowerCase()===emp.name.toLowerCase());
+    const payload = {
+      entryType: existing && !existing.active ? 'EMP_ADD' : 'EMP_ADD',
+      timestamp: new Date().toISOString(),
+      employeeName: emp.name,
+      department: emp.dept,
+      designation: emp.desig,
+      tier: emp.tier,
+      tLimit: lim.tLimit,
+      fLimit: lim.fLimit,
+      nLimit: lim.nLimit,
+      addedBy: 'Year Rollover Staff Sync',
+      policyYear,
+      action: 'syncAdd'
+    };
+    try{
+      await fetch(SHEETS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+      added++;
+    }catch(e){ errors++; }
+    // Small delay to avoid overwhelming Apps Script
+    await new Promise(r=>setTimeout(r,80));
+  }
+
+  // Step 2 — Deactivate employees in roster NOT on new list
+  const activeInRoster = roster.filter(r=>r.active);
+  for(const emp of activeInRoster){
+    if(!newNames.includes(emp.name.toLowerCase())){
+      const payload = {
+        entryType: 'EMP_REMOVE',
+        timestamp: new Date().toISOString(),
+        employeeName: emp.name,
+        department: emp.dept,
+        reason: 'Not included in new policy year staff list',
+        removedBy: 'Year Rollover Staff Sync',
+        policyYear
+      };
+      try{
+        await fetch(SHEETS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
+        deactivated++;
+      }catch(e){ errors++; }
+      await new Promise(r=>setTimeout(r,80));
+    }
+  }
+
+  // Step 3 — Apply to local roster immediately
+  applyStaffUpload();
+
+  // Done
+  btn.disabled = false;
+  const resultMsg = added+' employees synced · '+deactivated+' deactivated'+(errors>0?' · '+errors+' errors':'');
+  lbl.innerHTML = '✓ Sync Complete — '+resultMsg;
+  toast('✓ Staff list synced to Sheet: '+resultMsg);
+
+  // Reload roster from Sheet to confirm
+  await new Promise(r=>setTimeout(r,1500));
+  await loadLiveRoster();
+  toast('✓ Roster reloaded from Sheet');
+}
+
 function applyStaffUpload(){
   if(!parsedStaffList) return;
   const newNames = parsedStaffList.map(e=>e.name.toLowerCase());
@@ -2265,7 +2346,7 @@ async function executeRollover(){
       staffList: parsedStaffList || null};
 
     setProgress(40,'Archiving current year log...');
-    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    await fetch(SHEETS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)});
     await new Promise(r=>setTimeout(r,1000));
 
     setProgress(75,'Resetting all employee usage balances...');
