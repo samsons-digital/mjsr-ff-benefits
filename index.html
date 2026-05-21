@@ -1145,31 +1145,31 @@ async function loadLiveRoster(){
   try{
     const json = await postRead('getRoster');
     if(json.status==='ok' && json.roster && json.roster.length>0){
-      // Merge live Sheet data into roster
-      // Preserve tier info from local array where Sheet doesn't carry it
-      const localByName = {};
-      roster.forEach(e => localByName[e.name.toLowerCase()] = e);
-
-      roster = json.roster.map(live => {
-        const local = localByName[live.name.toLowerCase()];
-        return {
-          name:    live.name,
-          dept:    live.dept   || (local&&local.dept)   || '',
-          desig:   live.desig  || (local&&local.desig)  || '',
-          tier:    (local&&local.tier) || (live.tLimit>=20?'A':live.tLimit>=15?'B':'C'),
-          tLimit:  live.tLimit || 0,
-          tUsed:   live.tUsed  || 0,
-          fLimit:  live.fLimit || 0,
-          fUsed:   live.fUsed  || 0,
-          nLimit:  live.nLimit || 0,
-          nUsed:   live.nUsed  || 0,
-          active:  live.active !== false && live.active !== 'INACTIVE'
-        };
-      });
-      console.log('Roster loaded from Sheet: '+roster.filter(e=>e.active).length+' active employees');
+      const liveRoster = json.roster.map(live => ({
+        name:    String(live.name||'').trim(),
+        dept:    String(live.dept||'').trim(),
+        desig:   String(live.desig||'').trim(),
+        tier:    live.tLimit>=20?'A':live.tLimit>=15?'B':'C',
+        tLimit:  Number(live.tLimit)||0,
+        tUsed:   Number(live.tUsed)||0,
+        fLimit:  Number(live.fLimit)||0,
+        fUsed:   Number(live.fUsed)||0,
+        nLimit:  Number(live.nLimit)||0,
+        nUsed:   Number(live.nUsed)||0,
+        active:  live.active === true || live.active === 'ACTIVE' || (live.active !== false && live.active !== 'INACTIVE')
+      }));
+      const activeCount = liveRoster.filter(e=>e.active).length;
+      // Only replace roster if we got a sensible number of active employees
+      if(activeCount > 10){
+        roster = liveRoster;
+        document.getElementById('strip-count').textContent = activeCount+' active employees';
+        console.log('Live roster loaded: '+activeCount+' active employees');
+      } else {
+        console.log('Live roster had too few active employees ('+activeCount+') — keeping local roster');
+      }
     }
   } catch(e){
-    console.log('Sheet unreachable on init — using local roster');
+    console.log('Sheet unreachable — using local roster: '+e.message);
   }
   rebuildEmpSelect();
   renderRoster();
